@@ -156,12 +156,26 @@ public class RobotRace extends Base
         camera.update(gs.camMode);
 
         //Get coordinate values for camera
-        double x = gs.vDist * Math.cos(gs.theta) * Math.sin(-gs.phi); //r*cos(theta)*sin(phi)
-        double y = gs.vDist * Math.sin(gs.theta) * Math.sin(gs.phi);
-        double z = gs.vDist * Math.cos(gs.phi);
+        
+        float phi = gs.phi;
+        double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
+        
+        if (Math.abs(cosPhiForUp) <= 0.001)
+        {
+            System.out.println("0");
+            phi += 0.02;
+        }
+        
+        double x = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
+        double y = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
+        double z = gs.vDist * Math.cos(phi);
 
         camera.eye = new Vector(x, y, z);
-        camera.up = new Vector(0, 0, Math.cos(gs.phi + (0.5 * Math.PI)));
+        camera.up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
+        
+        //System.out.println(String.format("theta: %s; phi: %s", gs.theta, gs.phi + (0.5 * Math.PI)));
+        
+        System.out.println(String.format("camera.up: %s", camera.up));
 
         glu.gluLookAt(camera.eye.x(), camera.eye.y(), camera.eye.z(),
                 camera.center.x(), camera.center.y(), camera.center.z(),
@@ -204,6 +218,7 @@ public class RobotRace extends Base
         // Draw the robots
         for (Robot r : robots)
         {
+            r.drawStickFigure = gs.showStick;
             r.draw(true);
         }
 
@@ -398,6 +413,7 @@ public class RobotRace extends Base
                     drawStickFigure();
                 } else
                 {
+                    drawStickFigure();
                     drawSolid();
                 }
 
@@ -427,7 +443,7 @@ public class RobotRace extends Base
 
             public Torso(Robot robot)
             {
-                super(new Vector(0, 0, 11), robot);
+                super(new Vector(0, 0, 10.2), robot);
                 
                 this.head = new Head(new Vector(4.4,0,0), robot);
                 this.foreLegLeft = new UpperLeg(new Vector(legsOffsetX, legsOffsetY, 0), robot);
@@ -478,7 +494,34 @@ public class RobotRace extends Base
             @Override
             public void drawSolid()
             {
-
+                //Draw the middle block
+                gl.glPushMatrix();
+                gl.glTranslated(0, 0, 0.65);
+                gl.glScaled(3.4, 3.4, 5.5);
+                glut.glutSolidCube(1);
+                gl.glPopMatrix();
+                
+                //Draw the front block
+                gl.glPushMatrix();
+                gl.glTranslated(2.75, 0, -0.4);
+                gl.glScaled(2.1, 2.1, 3.4);
+                glut.glutSolidCube(1);
+                gl.glPopMatrix();
+                
+                //Draw the rear block
+                gl.glPushMatrix();
+                gl.glTranslated(-2.75, 0, -0.4);
+                gl.glScaled(2.1, 2.1, 3.4);
+                glut.glutSolidCube(1);
+                gl.glPopMatrix();
+                
+                //Draw the neck
+                gl.glPushMatrix();
+                gl.glTranslated(3.8, 0, 0);
+                gl.glRotated(90, 0, 1, 0);
+                glut.glutSolidCylinder(1.05, 1.2, 10, 1);
+                gl.glPopMatrix();
+                
             }
 
             @Override
@@ -628,13 +671,32 @@ public class RobotRace extends Base
             @Override
             public void drawSolid()
             {
+                //Draw the neck
+                gl.glPushMatrix();
+                gl.glTranslated(1.7, 0, 0);
+                gl.glScaled(3.4, 2.1, 2.2);
+                glut.glutSolidCube(1);
+                gl.glPopMatrix();
                 
+                //Draw the guns
+                gl.glPushMatrix();
+                gl.glTranslated(0, 0.9, -1.2);
+                gl.glRotated(90, 0, 1, 0);
+                glut.glutSolidCylinder(0.2, 4.3, 6, 1);
+                gl.glPopMatrix();
+                
+                //Draw the guns
+                gl.glPushMatrix();
+                gl.glTranslated(0, -0.9, -1.2);
+                gl.glRotated(90, 0, 1, 0);
+                glut.glutSolidCylinder(0.2, 4.3, 6, 1);
+                gl.glPopMatrix();
             }
 
             @Override
             public void drawChildLimbs()
             {
-
+                
             }
 
         }
@@ -650,7 +712,7 @@ public class RobotRace extends Base
         
         private final Material material;
 
-        public final boolean drawStickFigure = true;
+        public boolean drawStickFigure = true;
 
         /**
          * Constructs the robot with initial parameters.
