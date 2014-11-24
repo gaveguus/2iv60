@@ -772,7 +772,7 @@ public class RobotRace extends Base
             gl.glTranslated(position.x(), position.y(), position.z());
             rootLimb.draw();
             gl.glPopMatrix();
-
+//lalalalala haluuuuu
             // code goes here ...
 //            if (stickFigure)
 //            {
