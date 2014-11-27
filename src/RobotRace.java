@@ -1,5 +1,7 @@
 
 import static javax.media.opengl.GL2.*;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import robotrace.Base;
 import static robotrace.Base.FPS;
 import robotrace.Vector;
@@ -92,6 +94,9 @@ public class RobotRace extends Base
         terrain = new Terrain();
     }
 
+float Lightcolor[] = {0.7f,0.7f,0.7f,1f};
+float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
+    
     /**
      * Called upon the start of the application. Primarily used to configure
      * OpenGL.
@@ -99,6 +104,10 @@ public class RobotRace extends Base
     @Override
     public void initialize()
     {
+        gl.glEnable(GL_LIGHTING);
+        gl.glEnable(GL_LIGHT0);
+        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, Lightcolor, 0);
+        gl.glLightfv(GL_LIGHT0,GL_AMBIENT, Ambientcolor, 0);
         // Enable blending.
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -165,20 +174,24 @@ public class RobotRace extends Base
             System.out.println("0");
             phi += 0.02;
         }
+        
 
         double x = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
         double y = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
         double z = gs.vDist * Math.cos(phi);
+        
+        
 
         camera.eye = new Vector(x, y, z);
         camera.up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
 
-        //System.out.println(String.format("theta: %s; phi: %s", gs.theta, gs.phi + (0.5 * Math.PI)));
-        System.out.println(String.format("camera.up: %s", camera.up));
 
         glu.gluLookAt(camera.eye.x(), camera.eye.y(), camera.eye.z(),
                 camera.center.x(), camera.center.y(), camera.center.z(),
                 camera.up.x(), camera.up.y(), camera.up.z());
+        
+        float posLight1[] = { 3,2,20,0.3f };
+        gl.glLightfv(GL_LIGHT0, GL_POSITION, posLight1, 0);
     }
 
     /**
@@ -527,7 +540,7 @@ public class RobotRace extends Base
                 gl.glPushMatrix();
                 gl.glTranslated(3.8, 0, 0);
                 gl.glRotated(90, 0, 1, 0);
-                glut.glutSolidCylinder(1.05, 1.2, 10, 1);
+                glut.glutSolidCylinder(0.95, 1.2, 10, 1);
                 gl.glPopMatrix();
 
             }
