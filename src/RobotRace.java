@@ -414,12 +414,13 @@ public class RobotRace extends Base
                 gl.glRotated(rotationXYZ[1], 0, 1, 0);
                 gl.glRotated(rotationXYZ[2], 0, 0, 1);
 
+                float[] color = robot.material.diffuse;
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
                 if (this.robot.drawStickFigure)
                 {
                     drawStickFigure();
                 } else
                 {
-                    drawStickFigure();
                     drawSolid();
                 }
 
