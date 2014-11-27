@@ -1,7 +1,8 @@
-
+import static javax.media.opengl.GL.GL_FRONT;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
 import robotrace.Base;
 import static robotrace.Base.FPS;
 import robotrace.Vector;
@@ -37,8 +38,7 @@ import robotrace.Vector;
  * define the primitives of the object yourself (as seen above) or add
  * additional textured primitives to the GLUT object.
  */
-public class RobotRace extends Base
-{
+public class RobotRace extends Base {
 
     private float rotation;
 
@@ -66,8 +66,7 @@ public class RobotRace extends Base
      * Constructs this robot race by initializing robots, camera, track, and
      * terrain.
      */
-    public RobotRace()
-    {
+    public RobotRace() {
 
         // Create a new array of four robots
         robots = new Robot[4];
@@ -94,21 +93,20 @@ public class RobotRace extends Base
         terrain = new Terrain();
     }
 
-float Lightcolor[] = {0.7f,0.7f,0.7f,1f};
-float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
-    
+    float Lightcolor[] = {0.7f, 0.7f, 0.7f, 1f};
+    float Ambientcolor[] = {0.25f, 0.25f, 0.25f, 1};
+
     /**
      * Called upon the start of the application. Primarily used to configure
      * OpenGL.
      */
     @Override
-    public void initialize()
-    {
+    public void initialize() {
         gl.glShadeModel(GL_SMOOTH);
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_LIGHT0);
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, Lightcolor, 0);
-        gl.glLightfv(GL_LIGHT0,GL_AMBIENT, Ambientcolor, 0);
+        gl.glLightfv(GL_LIGHT0, GL_AMBIENT, Ambientcolor, 0);
         // Enable blending.
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -146,8 +144,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
      * Configures the viewing transform.
      */
     @Override
-    public void setView()
-    {
+    public void setView() {
         // Select part of window.
         gl.glViewport(0, 0, gs.w, gs.h);
 
@@ -170,28 +167,23 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         float phi = gs.phi;
         double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
 
-        if (Math.abs(cosPhiForUp) <= 0.001)
-        {
+        if (Math.abs(cosPhiForUp) <= 0.001) {
             System.out.println("0");
             phi += 0.02;
         }
-        
 
         double x = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
         double y = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
         double z = gs.vDist * Math.cos(phi);
-        
-        
 
         camera.eye = new Vector(x, y, z);
         camera.up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
 
-
         glu.gluLookAt(camera.eye.x(), camera.eye.y(), camera.eye.z(),
                 camera.center.x(), camera.center.y(), camera.center.z(),
                 camera.up.x(), camera.up.y(), camera.up.z());
-        
-        float posLight1[] = { 3,2,20,0.3f };
+
+        float posLight1[] = {3, 2, 20, 0.3f};
         gl.glLightfv(GL_LIGHT0, GL_POSITION, posLight1, 0);
     }
 
@@ -199,8 +191,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
      * Draws the entire scene.
      */
     @Override
-    public void drawScene()
-    {
+    public void drawScene() {
         double x = gs.cnt.x() / 10;
         double y = gs.cnt.y() / 10;
         double z = gs.cnt.z() / 10;
@@ -223,14 +214,12 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Draw the axis frame
-        if (gs.showAxes)
-        {
+        if (gs.showAxes) {
             drawAxisFrame();
         }
 
         // Draw the robots
-        for (Robot r : robots)
-        {
+        for (Robot r : robots) {
             r.drawStickFigure = gs.showStick;
             r.draw(true);
         }
@@ -263,8 +252,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
      * Draws the x-axis (red), y-axis (green), z-axis (blue), and origin
      * (yellow).
      */
-    public void drawAxisFrame()
-    {
+    public void drawAxisFrame() {
         //Draw the x-axis
         gl.glPushMatrix();
         gl.glColor3f(1f, 0f, 0f);
@@ -306,67 +294,78 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         //Draw the sphere in the origin
         gl.glColor3f(1f, 1f, 0f);
         glut.glutSolidSphere(0.1, 20, 20);
-        
+
     }
 
     /**
      * Materials that can be used for the robots.
      */
-    public enum Material
-    {
+    public enum Material {
 
         /**
          * Gold material properties. Modify the default values to make it look
          * like gold.
          */
         GOLD(
-                new float[]
-                {
+                new float[]{
                     0.75f, 0.6f, 0.22f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.63f, 0.55f, 0.36f, 1.0f
-                }),
+                },
+                new float[]{
+                    0.25f, 0.1995f, 0.0745f
+                },
+                0.6f
+        ),
         /**
          * Silver material properties. Modify the default values to make it look
          * like silver.
          */
         SILVER(
-                new float[]
-                {
+                new float[]{
                     0.5f, 0.5f, 0.5f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.5f, 0.5f, 0.5f, 1.0f
-                }),
+                },
+                new float[]{
+                    0.1925f, 0.1925f, 0.1925f
+                },
+                0.5f
+        ),
         /**
          * Wood material properties. Modify the default values to make it look
          * like wood.
          */
         WOOD(
-                new float[]
-                {
+                new float[]{
                     0.54f, 0.27f, 0.075f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.1f, 0.05f, 0.05f, 1.0f
-                }),
+                },
+                    new float[]{
+                    0.01f, 0.01f, 0.05f
+                },
+                0.1f
+            ),
         /**
          * Orange material properties. Modify the default values to make it look
          * like orange.
          */
         ORANGE(
-                new float[]
-                {
-                    1f, 0.64f, 0f, 1.0f
+                new float[]{
+                    1f, 0.45f, 0f, 1.0f
                 },
-                new float[]
-                {
-                    0.0f, 0.0f, 0.0f, 1.0f
-                });
+                new float[]{
+                    0.05f, 0.05f, 0.05f, 1.0f
+                },
+                    new float[]{
+                    0.0f, 0.0f, 0.0f
+                },
+                0.0f
+    );
 
         /**
          * The diffuse RGBA reflectance of the material.
@@ -377,26 +376,27 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
          * The specular RGBA reflectance of the material.
          */
         float[] specular;
+        float[] ambient;
+        float shininess;
 
         /**
          * Constructs a new material with diffuse and specular properties.
          */
-        private Material(float[] diffuse, float[] specular)
-        {
+        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess) {
             this.diffuse = diffuse;
             this.specular = specular;
+            this.ambient = ambient;
+            this.shininess = shininess;
         }
     }
 
     /**
      * Represents a Robot, to be implemented according to the Assignments.
      */
-    private class Robot
-    {
+    private class Robot {
 
         // <editor-fold defaultstate="collapsed" desc="Limb Classes">
-        private abstract class Limb
-        {
+        private abstract class Limb {
 
             //Each limb has a local origin, this is also the rotation point when the limb moves
             protected Vector localOrigin;
@@ -407,18 +407,15 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             //Represents the rotation of this limb, an array of doubles that contain, the rotation around the x, y, and z azis respectively.
             public double[] rotationXYZ;
 
-            public Limb(Vector localOrigin, Robot robot)
-            {
+            public Limb(Vector localOrigin, Robot robot) {
                 this.robot = robot;
                 this.localOrigin = localOrigin;
-                this.rotationXYZ = new double[]
-                {
+                this.rotationXYZ = new double[]{
                     0, 0, 0
                 };
             }
 
-            public void draw()
-            {
+            public void draw() {
                 gl.glPushMatrix();
 
                 //Each limb is drawn with respect to its local origin.
@@ -431,11 +428,9 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
 
                 float[] color = robot.material.diffuse;
                 gl.glColor4f(color[0], color[1], color[2], color[3]);
-                if (this.robot.drawStickFigure)
-                {
+                if (this.robot.drawStickFigure) {
                     drawStickFigure();
-                } else
-                {
+                } else {
                     drawSolid();
                 }
 
@@ -451,8 +446,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             public abstract void drawChildLimbs();
         }
 
-        private class Torso extends Limb
-        {
+        private class Torso extends Limb {
 
             //The torso has a head, and the upper legs as it's childs
             public Head head;
@@ -464,8 +458,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             private final double legsOffsetX = 2;
             private final double legsOffsetY = 1.4;
 
-            public Torso(Robot robot)
-            {
+            public Torso(Robot robot) {
                 super(new Vector(0, 0, 10.2), robot);
 
                 this.head = new Head(new Vector(4.4, 0, 0), robot);
@@ -476,8 +469,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 gl.glColor3f(0, 0, 0);
                 gl.glPushMatrix();
                 gl.glTranslatef(-4.4f, 0f, 0f);
@@ -515,8 +507,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //Draw the middle block
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.65);
@@ -548,8 +539,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 this.head.draw();
                 this.foreLegLeft.draw();
                 this.hindLegLeft.draw();
@@ -558,20 +548,17 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
         }
 
-        private class UpperLeg extends Limb
-        {
+        private class UpperLeg extends Limb {
 
             public LowerLeg lowerLeg;
 
-            public UpperLeg(Vector localOrigin, Robot robot)
-            {
+            public UpperLeg(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
                 this.lowerLeg = new LowerLeg(new Vector(0, 0, -6.6), robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
                 gl.glVertex3f(0, 0, 0);
@@ -583,8 +570,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, -3.3);
                 gl.glScaled(1, 0.5, 6.6);
@@ -593,27 +579,23 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 this.lowerLeg.draw();
             }
 
         }
 
-        public class LowerLeg extends Limb
-        {
+        public class LowerLeg extends Limb {
 
             public Foot foot;
 
-            public LowerLeg(Vector localOrigin, Robot robot)
-            {
+            public LowerLeg(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
                 this.foot = new Foot(new Vector(0, 0, -3.4f), robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
                 gl.glVertex3f(0, 0, 0);
@@ -625,15 +607,14 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //Draw the knee joint
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0.3, 0);
                 gl.glRotated(90, 1, 0, 0);
                 glut.glutSolidCylinder(0.6, 0.6, 10, 1);
                 gl.glPopMatrix();
-                
+
                 //Draw the lower leg
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, -1.7);
@@ -643,24 +624,20 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 this.foot.draw();
             }
 
         }
 
-        public class Foot extends Limb
-        {
+        public class Foot extends Limb {
 
-            public Foot(Vector localOrigin, Robot robot)
-            {
+            public Foot(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
                 gl.glColor3f(0, 0, 0);
@@ -675,8 +652,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.6);
                 glut.glutSolidCylinder(0.7, -0.8, 11, 1);
@@ -686,24 +662,20 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
 
             }
 
         }
 
-        public class Head extends Limb
-        {
+        public class Head extends Limb {
 
-            public Head(Vector localOrigin, Robot robot)
-            {
+            public Head(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
                 gl.glColor3f(0, 0, 0);
@@ -715,8 +687,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //Draw the neck
                 gl.glPushMatrix();
                 gl.glTranslated(1.7, 0, 0);
@@ -740,8 +711,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
 
             }
 
@@ -763,8 +733,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         /**
          * Constructs the robot with initial parameters.
          */
-        public Robot(Material material, Vector startPosition)
-        {
+        public Robot(Material material, Vector startPosition) {
             this.material = material;
             this.startPosition = startPosition;
             this.position = startPosition;
@@ -773,18 +742,18 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
             // code goes here ...
         }
 
-        public void move(Vector offset)
-        {
+        public void move(Vector offset) {
             this.position = startPosition.add(offset);
         }
 
         /**
          * Draws this robot (as a {@code stickfigure} if specified).
          */
-        public void draw(boolean stickFigure)
-        {
+        public void draw(boolean stickFigure) {
             gl.glPushMatrix();
             gl.glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular, 0);
+            gl.glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient, 0);
+            gl.glMaterialf(GL_FRONT, GL_SHININESS, material.shininess*128);
             gl.glTranslated(position.x(), position.y(), position.z());
             rootLimb.draw();
             gl.glPopMatrix();
@@ -812,8 +781,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
     /**
      * Implementation of a camera with a position and orientation.
      */
-    private class Camera
-    {
+    private class Camera {
 
         /**
          * The position of the camera.
@@ -834,33 +802,27 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
          * Updates the camera viewpoint and direction based on the selected
          * camera mode.
          */
-        public void update(int mode)
-        {
+        public void update(int mode) {
             robots[0].toString();
 
             // Helicopter mode
-            if (1 == mode)
-            {
+            if (1 == mode) {
                 setHelicopterMode();
 
                 // Motor cycle mode
-            } else if (2 == mode)
-            {
+            } else if (2 == mode) {
                 setMotorCycleMode();
 
                 // First person mode
-            } else if (3 == mode)
-            {
+            } else if (3 == mode) {
                 setFirstPersonMode();
 
                 // Auto mode
-            } else if (4 == mode)
-            {
+            } else if (4 == mode) {
                 // code goes here...
 
                 // Default mode
-            } else
-            {
+            } else {
                 setDefaultMode();
             }
         }
@@ -869,8 +831,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * camera's default mode.
          */
-        private void setDefaultMode()
-        {
+        private void setDefaultMode() {
             // code goes here ...
         }
 
@@ -878,8 +839,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * helicopter mode.
          */
-        private void setHelicopterMode()
-        {
+        private void setHelicopterMode() {
             // code goes here ...
         }
 
@@ -887,8 +847,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * motorcycle mode.
          */
-        private void setMotorCycleMode()
-        {
+        private void setMotorCycleMode() {
             // code goes here ...
         }
 
@@ -896,8 +855,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * first person mode.
          */
-        private void setFirstPersonMode()
-        {
+        private void setFirstPersonMode() {
             // code goes here ...
         }
 
@@ -906,8 +864,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
     /**
      * Implementation of a race track that is made from Bezier segments.
      */
-    private class RaceTrack
-    {
+    private class RaceTrack {
 
         /**
          * Array with control points for the O-track.
@@ -932,40 +889,33 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         /**
          * Constructs the race track, sets up display lists.
          */
-        public RaceTrack()
-        {
+        public RaceTrack() {
             // code goes here ...
         }
 
         /**
          * Draws this track, based on the selected track number.
          */
-        public void draw(int trackNr)
-        {
+        public void draw(int trackNr) {
 
             // The test track is selected
-            if (0 == trackNr)
-            {
+            if (0 == trackNr) {
                 // code goes here ...
 
                 // The O-track is selected
-            } else if (1 == trackNr)
-            {
+            } else if (1 == trackNr) {
                 // code goes here ...
 
                 // The L-track is selected
-            } else if (2 == trackNr)
-            {
+            } else if (2 == trackNr) {
                 // code goes here ...
 
                 // The C-track is selected
-            } else if (3 == trackNr)
-            {
+            } else if (3 == trackNr) {
                 // code goes here ...
 
                 // The custom track is selected
-            } else if (4 == trackNr)
-            {
+            } else if (4 == trackNr) {
                 // code goes here ...
 
             }
@@ -974,16 +924,14 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         /**
          * Returns the position of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getPoint(double t)
-        {
+        public Vector getPoint(double t) {
             return Vector.O; // <- code goes here
         }
 
         /**
          * Returns the tangent of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getTangent(double t)
-        {
+        public Vector getTangent(double t) {
             return Vector.O; // <- code goes here
         }
 
@@ -992,30 +940,26 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
     /**
      * Implementation of the terrain.
      */
-    private class Terrain
-    {
+    private class Terrain {
 
         /**
          * Can be used to set up a display list.
          */
-        public Terrain()
-        {
+        public Terrain() {
             // code goes here ...
         }
 
         /**
          * Draws the terrain.
          */
-        public void draw()
-        {
+        public void draw() {
             // code goes here ...
         }
 
         /**
          * Computes the elevation of the terrain at ({@code x}, {@code y}).
          */
-        public float heightAt(float x, float y)
-        {
+        public float heightAt(float x, float y) {
             return 0; // <- code goes here
         }
     }
@@ -1024,8 +968,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
      * Main program execution body, delegates to an instance of the RobotRace
      * implementation.
      */
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         RobotRace robotRace = new RobotRace();
         robotRace.run();
     }
