@@ -104,6 +104,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
     @Override
     public void initialize()
     {
+        gl.glShadeModel(GL_SMOOTH);
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_LIGHT0);
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, Lightcolor, 0);
@@ -305,6 +306,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         //Draw the sphere in the origin
         gl.glColor3f(1f, 1f, 0f);
         glut.glutSolidSphere(0.1, 20, 20);
+        
     }
 
     /**
@@ -320,11 +322,11 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         GOLD(
                 new float[]
                 {
-                    0.8f, 0.8f, 0.8f, 1.0f
+                    0.75f, 0.6f, 0.22f, 1.0f
                 },
                 new float[]
                 {
-                    0.0f, 0.0f, 0.0f, 1.0f
+                    0.63f, 0.55f, 0.36f, 1.0f
                 }),
         /**
          * Silver material properties. Modify the default values to make it look
@@ -333,11 +335,11 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         SILVER(
                 new float[]
                 {
-                    0.8f, 0.8f, 0.8f, 1.0f
+                    0.5f, 0.5f, 0.5f, 1.0f
                 },
                 new float[]
                 {
-                    0.0f, 0.0f, 0.0f, 1.0f
+                    0.5f, 0.5f, 0.5f, 1.0f
                 }),
         /**
          * Wood material properties. Modify the default values to make it look
@@ -346,11 +348,11 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         WOOD(
                 new float[]
                 {
-                    0.8f, 0.8f, 0.8f, 1.0f
+                    0.54f, 0.27f, 0.075f, 1.0f
                 },
                 new float[]
                 {
-                    0.0f, 0.0f, 0.0f, 1.0f
+                    0.1f, 0.05f, 0.05f, 1.0f
                 }),
         /**
          * Orange material properties. Modify the default values to make it look
@@ -359,7 +361,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         ORANGE(
                 new float[]
                 {
-                    0.8f, 0.8f, 0.8f, 1.0f
+                    1f, 0.64f, 0f, 1.0f
                 },
                 new float[]
                 {
@@ -782,6 +784,7 @@ float Ambientcolor[] = {0.25f,0.25f,0.25f,1};
         public void draw(boolean stickFigure)
         {
             gl.glPushMatrix();
+            gl.glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular, 0);
             gl.glTranslated(position.x(), position.y(), position.z());
             rootLimb.draw();
             gl.glPopMatrix();
