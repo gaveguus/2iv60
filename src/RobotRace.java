@@ -105,6 +105,8 @@ public class RobotRace extends Base {
      */
     @Override
     public void initialize() {
+        
+        //Initialize the shadeing model and two lights, one is an ambient light and the other will be placed near the camera.
         gl.glShadeModel(GL_SMOOTH);
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_LIGHT0);
@@ -184,9 +186,11 @@ public class RobotRace extends Base {
         double y = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
         double z = gs.vDist * Math.cos(phi);
         
+        //This light is located near the camera
         float posLight2[] = {-5, 0,5,1f};
         gl.glLightfv(GL_LIGHT1, GL_POSITION, posLight2, 0);
         
+        //Move the camera to the new coordinates
         camera.eye = new Vector(x, y, z);
         camera.up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
 
@@ -194,6 +198,7 @@ public class RobotRace extends Base {
                 camera.center.x(), camera.center.y(), camera.center.z(),
                 camera.up.x(), camera.up.y(), camera.up.z());
 
+        //This light stays at the same location
         float posLight1[] = {3, 2, 5, 1f};
         gl.glLightfv(GL_LIGHT0, GL_POSITION, posLight1, 0);
         
@@ -316,8 +321,7 @@ public class RobotRace extends Base {
     public enum Material {
 
         /**
-         * Gold material properties. Modify the default values to make it look
-         * like gold.
+         * Gold material properties.
          */
         GOLD(
                 new float[]{
@@ -332,8 +336,7 @@ public class RobotRace extends Base {
                 0.6f
         ),
         /**
-         * Silver material properties. Modify the default values to make it look
-         * like silver.
+         * Silver material properties.
          */
         SILVER(
                 new float[]{
@@ -364,8 +367,7 @@ public class RobotRace extends Base {
                 0.1f
             ),
         /**
-         * Orange material properties. Modify the default values to make it look
-         * like orange.
+         * Orange material properties.
          */
         ORANGE(
                 new float[]{
@@ -389,7 +391,15 @@ public class RobotRace extends Base {
          * The specular RGBA reflectance of the material.
          */
         float[] specular;
+        
+        /**
+         * The ambient RGBA relectance of the material
+         */
         float[] ambient;
+        
+        /**
+         * The materials' shininess
+         */
         float shininess;
 
         /**
@@ -408,18 +418,50 @@ public class RobotRace extends Base {
      */
     private class Robot {
 
+        /*
+         * We chose to implement a hierarchichal model for the robot's limbs. A base class "Limb" holds all common info
+         * associated with a robot's limb, like its location and rotation around its joint. Each limb class extends this base class.
+         * the hierarchy is as follows:
+         * - Torso (root)
+                - Head
+                - UpperLeg
+                    - LowerLeg
+                        - Foot
+                - UpperLeg
+                    - LowerLeg
+                        - Foot
+                - UpperLeg
+                    - LowerLeg
+                        - Foot
+                - UpperLeg
+                    - LowerLeg
+                        - Foot
+         */
+        
         // <editor-fold defaultstate="collapsed" desc="Limb Classes">
         private abstract class Limb {
 
-            //Each limb has a local origin, this is also the rotation point when the limb moves
+            /**
+             * Each limb has a local origin, this is also the rotation point when the limb moves
+             */
             protected Vector localOrigin;
 
-            //Each limb has a robot that it belongs to
+            /**
+             * Each limb has a robot that it belongs to
+             */
             protected Robot robot;
 
-            //Represents the rotation of this limb, an array of doubles that contain, the rotation around the x, y, and z azis respectively.
+            /**
+             * Represents the rotation of this limb around its joint (origin), 
+             * an array of doubles that contain, the rotation around the x, y, and z azis respectively.
+             */
             public double[] rotationXYZ;
 
+            /**
+             * Constructs a new Limb with the specified localorgin and parent Robot
+             * @param localOrigin
+             * @param robot 
+             */
             public Limb(Vector localOrigin, Robot robot) {
                 this.robot = robot;
                 this.localOrigin = localOrigin;
@@ -428,6 +470,9 @@ public class RobotRace extends Base {
                 };
             }
 
+            /**
+             * Draws this limb
+             */
             public void draw() {
                 gl.glPushMatrix();
 
@@ -452,13 +497,25 @@ public class RobotRace extends Base {
                 gl.glPopMatrix();
             }
 
+            /**
+             * Draws this limb as a stick figure. Stick figures are drawn with black lines as limbs and red spheres as joints
+             */
             public abstract void drawStickFigure();
 
+            /**
+             * Draws this limb as a solid
+             */
             public abstract void drawSolid();
 
+            /**
+             * Draw the child limbs of this limb
+             */
             public abstract void drawChildLimbs();
         }
 
+        /**
+         * Class for the robot's limb
+         */
         private class Torso extends Limb {
 
             //The torso has a head, and the upper legs as it's childs
@@ -468,7 +525,14 @@ public class RobotRace extends Base {
             public UpperLeg hindLegLeft;
             public UpperLeg hindLegRight;
 
+            /**
+             * The distance between the forelegs and hindlegs along the x-axis
+             */
             private final double legsOffsetX = 2;
+            
+            /**
+             * The distance between the left and right legs along the y-axis
+             */
             private final double legsOffsetY = 1.4;
 
             public Torso(Robot robot) {
@@ -483,6 +547,8 @@ public class RobotRace extends Base {
 
             @Override
             public void drawStickFigure() {
+                //Set the drawing color to black and draw the base line that runs from the neck 
+                //to the back of the torso
                 gl.glColor3f(0, 0, 0);
                 gl.glPushMatrix();
                 gl.glTranslatef(-4.4f, 0f, 0f);
