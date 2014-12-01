@@ -1,10 +1,8 @@
-import static javax.media.opengl.GL.GL_FRONT;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
 import robotrace.Base;
-import static robotrace.Base.FPS;
 import robotrace.Vector;
 
 /**
@@ -167,11 +165,13 @@ public class RobotRace extends Base {
         float phi = gs.phi;
         double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
 
-        if (Math.abs(cosPhiForUp) <= 0.001) {
-            System.out.println("0");
-            phi += 0.02;
+        //To make sure that the image does not disappear when the camera is directly above the scene, 
+        //we increase the value for phi when it is near 0.
+        if (Math.abs(cosPhiForUp) <= 0.02) {
+            phi += 0.025;
         }
 
+        //Get the x, y and z values for the camera.
         double x = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
         double y = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
         double z = gs.vDist * Math.cos(phi);
@@ -655,9 +655,9 @@ public class RobotRace extends Base {
             public void drawSolid() {
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.6);
-                glut.glutSolidCylinder(0.7, -0.8, 11, 1);
+                glut.glutSolidCylinder(0.7, -0.8, 15, 1);
                 gl.glTranslated(0, 0, -0.8);
-                glut.glutSolidCylinder(1, -0.8, 11, 1);
+                glut.glutSolidCylinder(1, -0.8, 15, 1);
                 gl.glPopMatrix();
             }
 
@@ -757,8 +757,7 @@ public class RobotRace extends Base {
             gl.glTranslated(position.x(), position.y(), position.z());
             rootLimb.draw();
             gl.glPopMatrix();
-//lalalalala haluuuuu
-            // code goes here ...
+
 //            if (stickFigure)
 //            {
 //                gl.glColor3f(0, 0, 0);
