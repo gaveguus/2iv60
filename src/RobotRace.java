@@ -239,7 +239,7 @@ public class RobotRace extends Base {
         // Draw the robots
         for (Robot r : robots) {
             r.drawStickFigure = gs.showStick;
-            r.draw(true);
+            r.draw();
         }
 
         // Draw race track
@@ -251,18 +251,6 @@ public class RobotRace extends Base {
         gl.glColor3f(0f, 0f, 0f);
 
         // Unit box around origin.
-        glut.glutWireCube(1f);
-
-        // Move in x-direction.
-        gl.glTranslatef(2f, 0f, 0f);
-
-        // Rotate 30 degrees, around z-axis.
-        gl.glRotatef(rotation, 0f, 0f, 1f);
-
-        // Scale in z-direction.
-        gl.glScalef(1f, 1f, 2f);
-
-        // Translated, rotated, scaled box.
         glut.glutWireCube(1f);
     }
 
@@ -474,6 +462,14 @@ public class RobotRace extends Base {
              * Draws this limb
              */
             public void draw() {
+                /*
+                Each limb is drawn according to the following precedure:
+                1 - Translate to the limbs local origin
+                2 - Rotate the limb according to its rotation
+                3 - Draw the limb's primitives using drawSolid() or drawStickFigure(). 
+                    the implementations of these methods are located in the subclasses (Torso, Head, UpperLeg etc.)
+                */
+                
                 gl.glPushMatrix();
 
                 //Each limb is drawn with respect to its local origin.
@@ -514,7 +510,7 @@ public class RobotRace extends Base {
         }
 
         /**
-         * Class for the robot's limb
+         * Class for the robot's Torso limb. The torso is the root limb for the robot and is connected to the Head and the Upper legs.
          */
         private class Torso extends Limb {
 
@@ -547,8 +543,8 @@ public class RobotRace extends Base {
 
             @Override
             public void drawStickFigure() {
-                //Set the drawing color to black and draw the base line that runs from the neck 
-                //to the back of the torso
+                //Set the drawing color to black and draw the a line that runs from the neck 
+                //to the back of the torso.
                 gl.glColor3f(0, 0, 0);
                 gl.glPushMatrix();
                 gl.glTranslatef(-4.4f, 0f, 0f);
@@ -587,6 +583,7 @@ public class RobotRace extends Base {
 
             @Override
             public void drawSolid() {
+                //The torso of the robot consists of three blocks, one at the front of the torso, one in the middle and one at the rear.
                 //Draw the middle block
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.65);
@@ -619,6 +616,7 @@ public class RobotRace extends Base {
 
             @Override
             public void drawChildLimbs() {
+                //The torso has the head end four upper legs as child limbs they are drawn accrdingly.
                 this.head.draw();
                 this.foreLegLeft.draw();
                 this.hindLegLeft.draw();
@@ -627,6 +625,9 @@ public class RobotRace extends Base {
             }
         }
 
+        /**
+         * The properties of the robot's upper legs are defined in this class. It has one child limb: LowerLeg
+         */
         private class UpperLeg extends Limb {
 
             public LowerLeg lowerLeg;
@@ -638,12 +639,15 @@ public class RobotRace extends Base {
 
             @Override
             public void drawStickFigure() {
+                //Draw the line representing the upperleg
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
                 gl.glVertex3f(0, 0, 0);
                 gl.glVertex3f(0f, 0f, -6.6f);
                 gl.glEnd();
                 gl.glFlush();
+                
+                //Draw the joint sphere (shoulder or hip)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
             }
@@ -664,6 +668,9 @@ public class RobotRace extends Base {
 
         }
 
+        /**
+         * The properties of the robot's lower legs are defined in this class. It has one child limb: Foot
+         */
         public class LowerLeg extends Limb {
 
             public Foot foot;
@@ -675,12 +682,15 @@ public class RobotRace extends Base {
 
             @Override
             public void drawStickFigure() {
+                //Draw the line representing the lowerleg.
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
                 gl.glVertex3f(0, 0, 0);
                 gl.glVertex3f(0f, 0f, -3.4f);
                 gl.glEnd();
                 gl.glFlush();
+                
+                //Draw the oint sphere (knee)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
             }
@@ -709,6 +719,9 @@ public class RobotRace extends Base {
 
         }
 
+        /**
+         * The properties of the robot's feet are defined in this class. It has no child limbs
+         */
         public class Foot extends Limb {
 
             public Foot(Vector localOrigin, Robot robot) {
@@ -717,8 +730,11 @@ public class RobotRace extends Base {
 
             @Override
             public void drawStickFigure() {
+                //Draw the joint sphere (ankle)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
+                
+                //Draw the line representing the foot
                 gl.glColor3f(0, 0, 0);
                 gl.glPushMatrix();
                 gl.glTranslatef(-0.5f, 0, 0);
@@ -732,6 +748,7 @@ public class RobotRace extends Base {
 
             @Override
             public void drawSolid() {
+                //Draw the foot, consisting of a large cylinder at the base and a smaller cylinder on top of that.
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.6);
                 glut.glutSolidCylinder(0.7, -0.8, 15, 1);
@@ -742,11 +759,14 @@ public class RobotRace extends Base {
 
             @Override
             public void drawChildLimbs() {
-
+                //No child limbs
             }
 
         }
 
+        /**
+         * The robot's head. It has no child limbs.
+         */
         public class Head extends Limb {
 
             public Head(Vector localOrigin, Robot robot) {
@@ -755,8 +775,11 @@ public class RobotRace extends Base {
 
             @Override
             public void drawStickFigure() {
+                //Draw the neck joint
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
+                
+                //Draw the line representing the head
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
                 gl.glVertex3f(0, 0, 0);
@@ -791,22 +814,31 @@ public class RobotRace extends Base {
 
             @Override
             public void drawChildLimbs() {
-
+                //No child limbs
             }
 
         }
         // </editor-fold>
 
-        public final Limb rootLimb;
         /**
-         * The material from which this robot is built.
+         * The root limb of the robot. this is the limb that is the root in the limb hierarchy
          */
+        public final Limb rootLimb;
 
+        /**
+         * Position where the robot is initially drawn.
+         */
         protected Vector startPosition;
         protected Vector position;
 
+        /**
+         * The material from which this robot is built.
+         */
         private final Material material;
 
+        /**
+         * If true, draws the robot as a stick figure
+         */
         public boolean drawStickFigure = true;
 
         /**
@@ -817,8 +849,8 @@ public class RobotRace extends Base {
             this.startPosition = startPosition;
             this.position = startPosition;
 
+            //Use a torso as the root limb
             rootLimb = new Torso(this);
-            // code goes here ...
         }
 
         public void move(Vector offset) {
@@ -826,9 +858,9 @@ public class RobotRace extends Base {
         }
 
         /**
-         * Draws this robot (as a {@code stickfigure} if specified).
+         * Draws this robot.
          */
-        public void draw(boolean stickFigure) {
+        public void draw() {
             gl.glPushMatrix();
             gl.glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular, 0);
             gl.glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient, 0);
@@ -836,23 +868,6 @@ public class RobotRace extends Base {
             gl.glTranslated(position.x(), position.y(), position.z());
             rootLimb.draw();
             gl.glPopMatrix();
-
-//            if (stickFigure)
-//            {
-//                gl.glColor3f(0, 0, 0);
-//                gl.glPushMatrix();
-//
-//                //Draw Torso
-//                gl.glTranslatef(-2.25f, 0f, 5f);
-//                gl.glBegin(GL_LINES);
-//                gl.glVertex3f(0, 0, 0);
-//                gl.glVertex3f(5f, 0f, 0f);
-//                gl.glEnd();
-//                gl.glFlush();
-//
-//                //Draw Head
-//                gl.glPopMatrix();
-//            }
         }
     }
 
