@@ -1055,7 +1055,10 @@ public class RobotRace extends Base {
          * Draws the terrain.
          */
         public void draw() {
-            // code goes here ...
+            gl.glPushMatrix();
+            gl.glColor3f(0.2f, 0.7f, 0.1f);
+            gl.glRectf(-100, -100, 100, 100);
+            gl.glPopMatrix();
         }
 
         /**
