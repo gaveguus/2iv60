@@ -1,3 +1,4 @@
+
 import java.util.Random;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -41,7 +42,8 @@ import robotrace.Vector;
  * define the primitives of the object yourself (as seen above) or add
  * additional textured primitives to the GLUT object.
  */
-public class RobotRace extends Base {
+public class RobotRace extends Base
+{
 
     private float rotation;
 
@@ -69,24 +71,25 @@ public class RobotRace extends Base {
      * Constructs this robot race by initializing robots, camera, track, and
      * terrain.
      */
-    public RobotRace() {
+    public RobotRace()
+    {
 
         // Create a new array of four robots
         robots = new Robot[4];
 
         Random rand = new Random();
-        
+
         // Initialize robot 0
-        robots[0] = new Robot(Material.GOLD, new Vector(0, 0, 0),rand);
+        robots[0] = new Robot(Material.GOLD, new Vector(0, 0, 0), rand);
 
         // Initialize robot 1
-        robots[1] = new Robot(Material.SILVER, new Vector(0, 0, 0),rand);
+        robots[1] = new Robot(Material.SILVER, new Vector(0, 0, 0), rand);
 
         // Initialize robot 2
-        robots[2] = new Robot(Material.WOOD, new Vector(0, 0, 0),rand);
+        robots[2] = new Robot(Material.WOOD, new Vector(0, 0, 0), rand);
 
         // Initialize robot 3
-        robots[3] = new Robot(Material.ORANGE, new Vector(0, 0, 0),rand);
+        robots[3] = new Robot(Material.ORANGE, new Vector(0, 0, 0), rand);
 
         // Initialize the camera
         camera = new Camera();
@@ -98,17 +101,30 @@ public class RobotRace extends Base {
         terrain = new Terrain();
     }
 
-    float Lightcolor1[] = {0.0f, 0.0f, 0.0f, 1f};
-    float Ambientcolor1[] = {0.0f, 0.0f, 0.0f, 1};
-    float Lightcolor2[] = {0.7f, 0.7f, 0.7f, 1f};
-    float Ambientcolor2[] = {0.3f, 0.3f, 0.3f, 1};
+    float Lightcolor1[] =
+    {
+        0.0f, 0.0f, 0.0f, 1f
+    };
+    float Ambientcolor1[] =
+    {
+        0.0f, 0.0f, 0.0f, 1
+    };
+    float Lightcolor2[] =
+    {
+        0.7f, 0.7f, 0.7f, 1f
+    };
+    float Ambientcolor2[] =
+    {
+        0.3f, 0.3f, 0.3f, 1
+    };
 
     /**
      * Called upon the start of the application. Primarily used to configure
      * OpenGL.
      */
     @Override
-    public void initialize() {
+    public void initialize()
+    {
 
         //Initialize the shadeing model and two lights, one is an ambient light and the other will be placed near the camera.
         gl.glShadeModel(GL_SMOOTH);
@@ -156,7 +172,8 @@ public class RobotRace extends Base {
      * Configures the viewing transform.
      */
     @Override
-    public void setView() {
+    public void setView()
+    {
         // Select part of window.
         gl.glViewport(0, 0, gs.w, gs.h);
 
@@ -181,7 +198,8 @@ public class RobotRace extends Base {
 
         //To make sure that the image does not disappear when the camera is directly above the scene, 
         //we increase the value for phi when it is near 0.
-        if (Math.abs(cosPhiForUp) <= 0.02) {
+        if (Math.abs(cosPhiForUp) <= 0.02)
+        {
             phi += 0.025;
         }
 
@@ -191,7 +209,10 @@ public class RobotRace extends Base {
         double z = gs.vDist * Math.cos(phi);
 
         //This light is located near the camera
-        float posLight2[] = {-5, 5, 0, 1f};
+        float posLight2[] =
+        {
+            -5, 5, 0, 1f
+        };
         gl.glLightfv(GL_LIGHT1, GL_POSITION, posLight2, 0);
 
         //Move the camera to the new coordinates
@@ -203,18 +224,21 @@ public class RobotRace extends Base {
                 camera.up.x(), camera.up.y(), camera.up.z());
 
         //This light stays at the same location
-        float posLight1[] = {3, 2, 5, 1f};
+        float posLight1[] =
+        {
+            3, 2, 5, 1f
+        };
         gl.glLightfv(GL_LIGHT0, GL_POSITION, posLight1, 0);
 
     }
-
 
     /**
      * Draws the entire scene.
      */
     @Override
-    public void drawScene() {
-        
+    public void drawScene()
+    {
+
         double lap = gs.tAnim;
 //        
 //        double x = gs.cnt.x() / 10;
@@ -222,11 +246,10 @@ public class RobotRace extends Base {
 //        double z = gs.cnt.z() / 10;
 
         //Vector newPosition = new Vector(-x, -y, z);
-        
-        robots[0].move(raceTrack.getPoint((float) (lap/robots[0].speed % 1), 10));
-        robots[1].move(raceTrack.getPoint((float) (lap/robots[1].speed % 1), 4));
-        robots[2].move(raceTrack.getPoint((float) (lap/robots[2].speed % 1), -4));
-        robots[3].move(raceTrack.getPoint((float) (lap/robots[3].speed % 1), -10));
+        robots[0].move(raceTrack.getPoint((float) (lap / robots[0].speed % 1), 10));
+        robots[1].move(raceTrack.getPoint((float) (lap / robots[1].speed % 1), 4));
+        robots[2].move(raceTrack.getPoint((float) (lap / robots[2].speed % 1), -4));
+        robots[3].move(raceTrack.getPoint((float) (lap / robots[3].speed % 1), -10));
 
         // Background color.
         gl.glClearColor(1f, 1f, 1f, 0f);
@@ -243,22 +266,30 @@ public class RobotRace extends Base {
         gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Draw the axis frame
-        if (gs.showAxes) {
+        if (gs.showAxes)
+        {
             drawAxisFrame();
         }
 
+        //Test for track
+        drawtTrack(45, 70, 30, 50);
+
         // Draw the robots
-        for (Robot r : robots) {
+        for (Robot r : robots)
+        {
             r.drawStickFigure = gs.showStick;
-            r.draw(true);
-            
-            Vector tangent = raceTrack.getTangent(lap/r.speed % 1);
+            r.draw();
+
+            Vector tangent = raceTrack.getTangent(lap / r.speed % 1);
             double anglePhi = Math.atan2(tangent.x(), tangent.y());
             double angleTheta = 0;
             //Math.toDegrees(anglePhi);
-            
-            double[] rotationXYZ = new double[]{0,0,anglePhi};
-            
+
+            double[] rotationXYZ = new double[]
+            {
+                0, 0, anglePhi
+            };
+
             r.rotate(rotationXYZ);
         }
 
@@ -278,7 +309,8 @@ public class RobotRace extends Base {
      * Draws the x-axis (red), y-axis (green), z-axis (blue), and origin
      * (yellow).
      */
-    public void drawAxisFrame() {
+    public void drawAxisFrame()
+    {
         //Draw the x-axis
         gl.glPushMatrix();
         gl.glColor3f(1f, 0f, 0f);
@@ -326,19 +358,23 @@ public class RobotRace extends Base {
     /**
      * Materials that can be used for the robots.
      */
-    public enum Material {
+    public enum Material
+    {
 
         /**
          * Gold material properties.
          */
         GOLD(
-                new float[]{
+                new float[]
+                {
                     0.75f, 0.6f, 0.22f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.63f, 0.55f, 0.36f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.25f, 0.1995f, 0.0745f
                 },
                 0.6f
@@ -347,13 +383,16 @@ public class RobotRace extends Base {
          * Silver material properties.
          */
         SILVER(
-                new float[]{
+                new float[]
+                {
                     0.5f, 0.5f, 0.5f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.5f, 0.5f, 0.5f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.1925f, 0.1925f, 0.1925f
                 },
                 0.5f
@@ -363,13 +402,16 @@ public class RobotRace extends Base {
          * like wood.
          */
         WOOD(
-                new float[]{
+                new float[]
+                {
                     0.54f, 0.27f, 0.075f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.1f, 0.05f, 0.05f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.01f, 0.01f, 0.05f
                 },
                 0.1f
@@ -378,13 +420,16 @@ public class RobotRace extends Base {
          * Orange material properties.
          */
         ORANGE(
-                new float[]{
+                new float[]
+                {
                     1f, 0.45f, 0f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.05f, 0.05f, 0.05f, 1.0f
                 },
-                new float[]{
+                new float[]
+                {
                     0.0f, 0.0f, 0.0f
                 },
                 0.0f
@@ -413,7 +458,8 @@ public class RobotRace extends Base {
         /**
          * Constructs a new material with diffuse and specular properties.
          */
-        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess) {
+        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess)
+        {
             this.diffuse = diffuse;
             this.specular = specular;
             this.ambient = ambient;
@@ -424,7 +470,8 @@ public class RobotRace extends Base {
     /**
      * Represents a Robot, to be implemented according to the Assignments.
      */
-    private class Robot {
+    private class Robot
+    {
 
         /*
          * We chose to implement a hierarchichal model for the robot's limbs. A base class "Limb" holds all common info
@@ -446,7 +493,8 @@ public class RobotRace extends Base {
          - Foot
          */
         // <editor-fold defaultstate="collapsed" desc="Limb Classes">
-        private abstract class Limb {
+        private abstract class Limb
+        {
 
             /**
              * Each limb has a local origin, this is also the rotation point
@@ -473,10 +521,12 @@ public class RobotRace extends Base {
              * @param localOrigin
              * @param robot
              */
-            public Limb(Vector localOrigin, Robot robot) {
+            public Limb(Vector localOrigin, Robot robot)
+            {
                 this.robot = robot;
                 this.localOrigin = localOrigin;
-                this.rotationXYZ = new double[]{
+                this.rotationXYZ = new double[]
+                {
                     0, 0, 0
                 };
             }
@@ -484,15 +534,16 @@ public class RobotRace extends Base {
             /**
              * Draws this limb
              */
-            public void draw() {
+            public void draw()
+            {
                 /*
-                Each limb is drawn according to the following precedure:
-                1 - Translate to the limbs local origin
-                2 - Rotate the limb according to its rotation
-                3 - Draw the limb's primitives using drawSolid() or drawStickFigure(). 
-                    the implementations of these methods are located in the subclasses (Torso, Head, UpperLeg etc.)
-                */
-                
+                 Each limb is drawn according to the following precedure:
+                 1 - Translate to the limbs local origin
+                 2 - Rotate the limb according to its rotation
+                 3 - Draw the limb's primitives using drawSolid() or drawStickFigure(). 
+                 the implementations of these methods are located in the subclasses (Torso, Head, UpperLeg etc.)
+                 */
+
                 gl.glPushMatrix();
 
                 //Each limb is drawn with respect to its local origin.
@@ -505,9 +556,11 @@ public class RobotRace extends Base {
 
                 float[] color = robot.material.diffuse;
                 gl.glColor4f(color[0], color[1], color[2], color[3]);
-                if (this.robot.drawStickFigure) {
+                if (this.robot.drawStickFigure)
+                {
                     drawStickFigure();
-                } else {
+                } else
+                {
                     drawSolid();
                 }
 
@@ -534,9 +587,11 @@ public class RobotRace extends Base {
         }
 
         /**
-         * Class for the robot's Torso limb. The torso is the root limb for the robot and is connected to the Head and the Upper legs.
+         * Class for the robot's Torso limb. The torso is the root limb for the
+         * robot and is connected to the Head and the Upper legs.
          */
-        private class Torso extends Limb {
+        private class Torso extends Limb
+        {
 
             //The torso has a head, and the upper legs as it's childs
             public Head head;
@@ -555,7 +610,8 @@ public class RobotRace extends Base {
              */
             private final double legsOffsetY = 1.4;
 
-            public Torso(Robot robot) {
+            public Torso(Robot robot)
+            {
                 super(new Vector(0, 0, 10.2), robot);
 
                 this.head = new Head(new Vector(4.4, 0, 0), robot);
@@ -566,7 +622,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawStickFigure() {
+            public void drawStickFigure()
+            {
                 //Set the drawing color to black and draw the a line that runs from the neck 
                 //to the back of the torso.
                 gl.glColor3f(0, 0, 0);
@@ -606,7 +663,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawSolid() {
+            public void drawSolid()
+            {
                 //The torso of the robot consists of three blocks, one at the front of the torso, one in the middle and one at the rear.
                 //Draw the middle block
                 gl.glPushMatrix();
@@ -639,7 +697,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawChildLimbs() {
+            public void drawChildLimbs()
+            {
                 //The torso has the head end four upper legs as child limbs they are drawn accrdingly.
                 this.head.draw();
                 this.foreLegLeft.draw();
@@ -650,19 +709,23 @@ public class RobotRace extends Base {
         }
 
         /**
-         * The properties of the robot's upper legs are defined in this class. It has one child limb: LowerLeg
+         * The properties of the robot's upper legs are defined in this class.
+         * It has one child limb: LowerLeg
          */
-        private class UpperLeg extends Limb {
+        private class UpperLeg extends Limb
+        {
 
             public LowerLeg lowerLeg;
 
-            public UpperLeg(Vector localOrigin, Robot robot) {
+            public UpperLeg(Vector localOrigin, Robot robot)
+            {
                 super(localOrigin, robot);
                 this.lowerLeg = new LowerLeg(new Vector(0, 0, -6.6), robot);
             }
 
             @Override
-            public void drawStickFigure() {
+            public void drawStickFigure()
+            {
                 //Draw the line representing the upperleg
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
@@ -670,14 +733,15 @@ public class RobotRace extends Base {
                 gl.glVertex3f(0f, 0f, -6.6f);
                 gl.glEnd();
                 gl.glFlush();
-                
+
                 //Draw the joint sphere (shoulder or hip)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
             }
 
             @Override
-            public void drawSolid() {
+            public void drawSolid()
+            {
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, -3.3);
                 gl.glScaled(1, 0.5, 6.6);
@@ -686,26 +750,31 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawChildLimbs() {
+            public void drawChildLimbs()
+            {
                 this.lowerLeg.draw();
             }
 
         }
 
         /**
-         * The properties of the robot's lower legs are defined in this class. It has one child limb: Foot
+         * The properties of the robot's lower legs are defined in this class.
+         * It has one child limb: Foot
          */
-        public class LowerLeg extends Limb {
+        public class LowerLeg extends Limb
+        {
 
             public Foot foot;
 
-            public LowerLeg(Vector localOrigin, Robot robot) {
+            public LowerLeg(Vector localOrigin, Robot robot)
+            {
                 super(localOrigin, robot);
                 this.foot = new Foot(new Vector(0, 0, -3.4f), robot);
             }
 
             @Override
-            public void drawStickFigure() {
+            public void drawStickFigure()
+            {
                 //Draw the line representing the lowerleg.
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
@@ -713,14 +782,15 @@ public class RobotRace extends Base {
                 gl.glVertex3f(0f, 0f, -3.4f);
                 gl.glEnd();
                 gl.glFlush();
-                
+
                 //Draw the oint sphere (knee)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
             }
 
             @Override
-            public void drawSolid() {
+            public void drawSolid()
+            {
                 //Draw the knee joint
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0.3, 0);
@@ -737,27 +807,32 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawChildLimbs() {
+            public void drawChildLimbs()
+            {
                 this.foot.draw();
             }
 
         }
 
         /**
-         * The properties of the robot's feet are defined in this class. It has no child limbs
+         * The properties of the robot's feet are defined in this class. It has
+         * no child limbs
          */
-        public class Foot extends Limb {
+        public class Foot extends Limb
+        {
 
-            public Foot(Vector localOrigin, Robot robot) {
+            public Foot(Vector localOrigin, Robot robot)
+            {
                 super(localOrigin, robot);
             }
 
             @Override
-            public void drawStickFigure() {
+            public void drawStickFigure()
+            {
                 //Draw the joint sphere (ankle)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
-                
+
                 //Draw the line representing the foot
                 gl.glColor3f(0, 0, 0);
                 gl.glPushMatrix();
@@ -771,7 +846,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawSolid() {
+            public void drawSolid()
+            {
                 //Draw the foot, consisting of a large cylinder at the base and a smaller cylinder on top of that.
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.6);
@@ -782,7 +858,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawChildLimbs() {
+            public void drawChildLimbs()
+            {
                 //No child limbs
             }
 
@@ -791,18 +868,21 @@ public class RobotRace extends Base {
         /**
          * The robot's head. It has no child limbs.
          */
-        public class Head extends Limb {
+        public class Head extends Limb
+        {
 
-            public Head(Vector localOrigin, Robot robot) {
+            public Head(Vector localOrigin, Robot robot)
+            {
                 super(localOrigin, robot);
             }
 
             @Override
-            public void drawStickFigure() {
+            public void drawStickFigure()
+            {
                 //Draw the neck joint
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
-                
+
                 //Draw the line representing the head
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
@@ -813,7 +893,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawSolid() {
+            public void drawSolid()
+            {
                 //Draw the neck
                 gl.glPushMatrix();
                 gl.glTranslated(1.7, 0, 0);
@@ -837,7 +918,8 @@ public class RobotRace extends Base {
             }
 
             @Override
-            public void drawChildLimbs() {
+            public void drawChildLimbs()
+            {
                 //No child limbs
             }
 
@@ -845,7 +927,8 @@ public class RobotRace extends Base {
         // </editor-fold>
 
         /**
-         * The root limb of the robot. this is the limb that is the root in the limb hierarchy
+         * The root limb of the robot. this is the limb that is the root in the
+         * limb hierarchy
          */
         public final Limb rootLimb;
 
@@ -865,29 +948,32 @@ public class RobotRace extends Base {
          * If true, draws the robot as a stick figure
          */
         public boolean drawStickFigure = true;
-        
+
         public double speed;
 
         /**
          * Constructs the robot with initial parameters.
          */
-        public Robot(Material material, Vector startPosition, Random rand) {
+        public Robot(Material material, Vector startPosition, Random rand)
+        {
             this.material = material;
             this.startPosition = startPosition;
             this.position = startPosition;
 
             //Use a torso as the root limb
             rootLimb = new Torso(this);
-            
-            this.speed = 8 + rand.nextDouble()*2;
+
+            this.speed = 8 + rand.nextDouble() * 2;
             // code goes here ...
         }
 
-        public void move(Vector offset) {
+        public void move(Vector offset)
+        {
             this.position = startPosition.add(offset);
         }
 
-        public void rotate(double[] rotationXYZ) {
+        public void rotate(double[] rotationXYZ)
+        {
             this.rootLimb.rotationXYZ[0] = Math.toDegrees(rotationXYZ[0]);
             this.rootLimb.rotationXYZ[1] = Math.toDegrees(rotationXYZ[1]);
             this.rootLimb.rotationXYZ[2] = Math.toDegrees(rotationXYZ[2]);
@@ -896,7 +982,8 @@ public class RobotRace extends Base {
         /**
          * Draws this robot.
          */
-        public void draw() {
+        public void draw()
+        {
             gl.glPushMatrix();
             gl.glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular, 0);
             gl.glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient, 0);
@@ -913,7 +1000,8 @@ public class RobotRace extends Base {
     /**
      * Implementation of a camera with a position and orientation.
      */
-    private class Camera {
+    private class Camera
+    {
 
         /**
          * The position of the camera.
@@ -934,27 +1022,33 @@ public class RobotRace extends Base {
          * Updates the camera viewpoint and direction based on the selected
          * camera mode.
          */
-        public void update(int mode) {
+        public void update(int mode)
+        {
             robots[0].toString();
 
             // Helicopter mode
-            if (1 == mode) {
+            if (1 == mode)
+            {
                 setHelicopterMode();
 
                 // Motor cycle mode
-            } else if (2 == mode) {
+            } else if (2 == mode)
+            {
                 setMotorCycleMode();
 
                 // First person mode
-            } else if (3 == mode) {
+            } else if (3 == mode)
+            {
                 setFirstPersonMode();
 
                 // Auto mode
-            } else if (4 == mode) {
+            } else if (4 == mode)
+            {
                 // code goes here...
 
                 // Default mode
-            } else {
+            } else
+            {
                 setDefaultMode();
             }
         }
@@ -963,7 +1057,8 @@ public class RobotRace extends Base {
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * camera's default mode.
          */
-        private void setDefaultMode() {
+        private void setDefaultMode()
+        {
             // code goes here ...
         }
 
@@ -971,7 +1066,8 @@ public class RobotRace extends Base {
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * helicopter mode.
          */
-        private void setHelicopterMode() {
+        private void setHelicopterMode()
+        {
             // code goes here ...
         }
 
@@ -979,7 +1075,8 @@ public class RobotRace extends Base {
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * motorcycle mode.
          */
-        private void setMotorCycleMode() {
+        private void setMotorCycleMode()
+        {
             // code goes here ...
         }
 
@@ -987,7 +1084,8 @@ public class RobotRace extends Base {
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * first person mode.
          */
-        private void setFirstPersonMode() {
+        private void setFirstPersonMode()
+        {
             // code goes here ...
         }
 
@@ -996,7 +1094,8 @@ public class RobotRace extends Base {
     /**
      * Implementation of a race track that is made from Bezier segments.
      */
-    private class RaceTrack {
+    private class RaceTrack
+    {
 
         /**
          * Array with control points for the O-track.
@@ -1021,33 +1120,45 @@ public class RobotRace extends Base {
         /**
          * Constructs the race track, sets up display lists.
          */
-        public RaceTrack() {
+        public RaceTrack()
+        {
             // code goes here ...
         }
 
         /**
          * Draws this track, based on the selected track number.
          */
-        public void draw(int trackNr) {
+        public void draw(int trackNr)
+        {
+
+            double radius1 = 0;
+            double radius2 = 0;
+            double radius3 = 0;
+            double radius4 = 0;
 
             // The test track is selected
-            if (0 == trackNr) {
+            if (0 == trackNr)
+            {
                 // code goes here ...
 
                 // The O-track is selected
-            } else if (1 == trackNr) {
+            } else if (1 == trackNr)
+            {
                 // code goes here ...
 
                 // The L-track is selected
-            } else if (2 == trackNr) {
+            } else if (2 == trackNr)
+            {
                 // code goes here ...
 
                 // The C-track is selected
-            } else if (3 == trackNr) {
+            } else if (3 == trackNr)
+            {
                 // code goes here ...
 
                 // The custom track is selected
-            } else if (4 == trackNr) {
+            } else if (4 == trackNr)
+            {
                 // code goes here ...
 
             }
@@ -1056,8 +1167,9 @@ public class RobotRace extends Base {
         /**
          * Returns the position of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getPoint(double t, double shift) {
-            Vector position = new Vector((60+shift)* Math.cos(2 * Math.PI * t), (shift+84) * Math.sin(2 * Math.PI * t), 1d);
+        public Vector getPoint(double t, double shift)
+        {
+            Vector position = new Vector((60 + shift) * Math.cos(2 * Math.PI * t), (shift + 84) * Math.sin(2 * Math.PI * t), 1d);
             //System.out.println(t);
             return position; // <- code goes here
         }
@@ -1065,7 +1177,8 @@ public class RobotRace extends Base {
         /**
          * Returns the tangent of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getTangent(double t) {
+        public Vector getTangent(double t)
+        {
             Vector tangent = new Vector(28 * Math.PI * Math.cos(2 * Math.PI * t), -20 * Math.PI * Math.sin(2 * Math.PI * t), 0);
             return tangent; // <- code goes here
         }
@@ -1075,21 +1188,25 @@ public class RobotRace extends Base {
     /**
      * Implementation of the terrain.
      */
-    private class Terrain {
+    private class Terrain
+    {
 
         /**
          * Can be used to set up a display list.
          */
-        public Terrain() {
+        public Terrain()
+        {
             // code goes here ...
         }
 
         /**
          * Draws the terrain.
          */
-        public void draw() {
+        public void draw()
+        {
             gl.glPushMatrix();
             gl.glColor3f(0.2f, 0.7f, 0.1f);
+            gl.glTranslated(0, 0, -0.1);
             gl.glRectf(-100, -100, 100, 100);
             gl.glPopMatrix();
         }
@@ -1097,7 +1214,8 @@ public class RobotRace extends Base {
         /**
          * Computes the elevation of the terrain at ({@code x}, {@code y}).
          */
-        public float heightAt(float x, float y) {
+        public float heightAt(float x, float y)
+        {
             return 0; // <- code goes here
         }
     }
@@ -1106,9 +1224,28 @@ public class RobotRace extends Base {
      * Main program execution body, delegates to an instance of the RobotRace
      * implementation.
      */
-    public static void main(String args[]) {
+    public static void main(String args[])
+    {
         RobotRace robotRace = new RobotRace();
         robotRace.run();
+    }
+
+    public void drawtTrack(double widthX, double widthY, double trackWidth, int segments)
+    {
+        gl.glBegin(GL_QUAD_STRIP);
+        double segmentLength = (2 * Math.PI) / segments;
+        for (int i = 0; i < segments+1; i++)
+        {
+            double alpha = segmentLength * i;
+
+            Vector p = new Vector(widthX * Math.cos(alpha), widthY * Math.sin(alpha), 0);
+            Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
+
+            gl.glVertex3d(p.x(), p.y(), p.z());
+            gl.glVertex3d(q.x(), q.y(), q.z());
+
+        }
+        gl.glEnd();
     }
 
 }
