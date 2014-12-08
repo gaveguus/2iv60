@@ -7,7 +7,6 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT1;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
-import jogamp.nativewindow.x11.X11Lib;
 import robotrace.Base;
 import robotrace.Vector;
 
@@ -270,9 +269,6 @@ public class RobotRace extends Base
         {
             drawAxisFrame();
         }
-
-        //Test for track
-        drawtTrack(45, 70, 30, 50);
 
         // Draw the robots
         for (Robot r : robots)
@@ -1131,15 +1127,22 @@ public class RobotRace extends Base
         public void draw(int trackNr)
         {
 
-            double radius1 = 0;
-            double radius2 = 0;
-            double radius3 = 0;
-            double radius4 = 0;
-
             // The test track is selected
             if (0 == trackNr)
             {
-                // code goes here ...
+                //Set color
+                double trackwidth = 7;
+
+                float[][] colors =
+                {
+                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                };
+
+                for (int i = 0; i < 4; i++)
+                {
+                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+                    drawtTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
+                }
 
                 // The O-track is selected
             } else if (1 == trackNr)
@@ -1162,6 +1165,24 @@ public class RobotRace extends Base
                 // code goes here ...
 
             }
+        }
+
+        private void drawtTrack(double widthX, double widthY, double trackWidth, int segments)
+        {
+            gl.glBegin(GL_QUAD_STRIP);
+            double segmentLength = (2 * Math.PI) / segments;
+            for (int i = 0; i < segments + 1; i++)
+            {
+                double alpha = segmentLength * i;
+
+                Vector p = new Vector(widthX * Math.cos(alpha), widthY * Math.sin(alpha), 0);
+                Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
+
+                gl.glVertex3d(p.x(), p.y(), p.z());
+                gl.glVertex3d(q.x(), q.y(), q.z());
+
+            }
+            gl.glEnd();
         }
 
         /**
@@ -1228,24 +1249,6 @@ public class RobotRace extends Base
     {
         RobotRace robotRace = new RobotRace();
         robotRace.run();
-    }
-
-    public void drawtTrack(double widthX, double widthY, double trackWidth, int segments)
-    {
-        gl.glBegin(GL_QUAD_STRIP);
-        double segmentLength = (2 * Math.PI) / segments;
-        for (int i = 0; i < segments+1; i++)
-        {
-            double alpha = segmentLength * i;
-
-            Vector p = new Vector(widthX * Math.cos(alpha), widthY * Math.sin(alpha), 0);
-            Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
-
-            gl.glVertex3d(p.x(), p.y(), p.z());
-            gl.glVertex3d(q.x(), q.y(), q.z());
-
-        }
-        gl.glEnd();
     }
 
 }
