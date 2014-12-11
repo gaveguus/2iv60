@@ -1,5 +1,6 @@
 
 import com.jogamp.opengl.util.texture.Texture;
+import java.util.HashMap;
 import java.util.Random;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -44,7 +45,7 @@ import robotrace.Vector;
  */
 public class RobotRace extends Base
 {
-
+   
     private float rotation;
 
     /**
@@ -73,7 +74,6 @@ public class RobotRace extends Base
      */
     public RobotRace()
     {
-
         // Create a new array of four robots
         robots = new Robot[4];
 
@@ -244,12 +244,6 @@ public class RobotRace extends Base
 //        double y = gs.cnt.y() / 10;
 //        double z = gs.cnt.z() / 10;
 
-        //Vector newPosition = new Vector(-x, -y, z);
-        robots[0].move(raceTrack.getPoint((float) (lap / robots[0].speed % 1), 10));
-        robots[1].move(raceTrack.getPoint((float) (lap / robots[1].speed % 1), 4));
-        robots[2].move(raceTrack.getPoint((float) (lap / robots[2].speed % 1), -4));
-        robots[3].move(raceTrack.getPoint((float) (lap / robots[3].speed % 1), -10));
-
         // Background color.
         gl.glClearColor(1f, 1f, 1f, 0f);
 
@@ -271,8 +265,12 @@ public class RobotRace extends Base
         }
 
         // Draw the robots
-        for (Robot r : robots)
+        for (int i = 0; i < robots.length; i++)
         {
+            Robot r = robots[i];
+            
+            r.move(raceTrack.getPoint((float) (lap / r.speed % 1), raceTrack.getShift(i)));
+            
             r.drawStickFigure = gs.showStick;
             r.draw();
 
@@ -1127,18 +1125,21 @@ public class RobotRace extends Base
         {
             // code goes here ...
         }
+        
+        public float getShift(int trackNr) {
+            return trackNr * 6;
+        }
 
         /**
          * Draws this track, based on the selected track number.
          */
         public void draw(int trackNr)
-        {
-
+        { 
             // The test track is selected
             if (0 == trackNr)
             {
                 //Set color
-                double trackwidth = 7;
+                double trackwidth = 6;
 
                 float[][] colors =
                 {
@@ -1148,7 +1149,7 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    drawOTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 20);
+                    drawOTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
                 }
 
                 // The O-track is selected
@@ -1182,7 +1183,7 @@ public class RobotRace extends Base
             {
                 double alpha = segmentLength * i;
 
-                Vector p = new Vector(widthX * Math.cos(alpha), widthY * Math.sin(alpha), 0);
+                Vector p = new Vector((widthX-3) * Math.cos(alpha), (widthY-3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
 
                 gl.glVertex3d(p.x(), p.y(), p.z());
@@ -1197,7 +1198,7 @@ public class RobotRace extends Base
          */
         public Vector getPoint(double t, double shift)
         {
-            Vector position = new Vector((60 + shift) * Math.cos(2 * Math.PI * t), (shift + 84) * Math.sin(2 * Math.PI * t), 1d);
+            Vector position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t), (shift + 70) * Math.sin(2 * Math.PI * t), 1d);
             //System.out.println(t);
             return position; // <- code goes here
         }
