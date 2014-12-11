@@ -1,4 +1,5 @@
 
+import com.jogamp.opengl.util.texture.Texture;
 import java.util.Random;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -116,7 +117,6 @@ public class RobotRace extends Base
     {
         0.3f, 0.3f, 0.3f, 1
     };
-
     /**
      * Called upon the start of the application. Primarily used to configure
      * OpenGL.
@@ -450,16 +450,24 @@ public class RobotRace extends Base
          * The materials' shininess
          */
         float shininess;
+        
+        Texture texture;
 
         /**
          * Constructs a new material with diffuse and specular properties.
          */
-        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess)
+        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess, Texture texture)
         {
             this.diffuse = diffuse;
             this.specular = specular;
             this.ambient = ambient;
             this.shininess = shininess;
+            this.texture = texture;
+        }
+        
+        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess)
+        {
+            this(diffuse, specular, ambient, shininess, null);
         }
     }
 
@@ -946,7 +954,6 @@ public class RobotRace extends Base
         public boolean drawStickFigure = true;
 
         public double speed;
-
         /**
          * Constructs the robot with initial parameters.
          */
@@ -1141,7 +1148,7 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    drawtTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
+                    drawOTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 20);
                 }
 
                 // The O-track is selected
@@ -1167,7 +1174,7 @@ public class RobotRace extends Base
             }
         }
 
-        private void drawtTrack(double widthX, double widthY, double trackWidth, int segments)
+        private void drawOTrack(double widthX, double widthY, double trackWidth, int segments)
         {
             gl.glBegin(GL_QUAD_STRIP);
             double segmentLength = (2 * Math.PI) / segments;
@@ -1224,7 +1231,7 @@ public class RobotRace extends Base
          * Draws the terrain.
          */
         public void draw()
-        {
+        {            
             gl.glPushMatrix();
             gl.glColor3f(0.2f, 0.7f, 0.1f);
             gl.glTranslated(0, 0, -0.1);
