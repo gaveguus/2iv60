@@ -207,7 +207,7 @@ public class RobotRace extends Base
                 float phi = gs.phi;
                 double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
 
-        //To make sure that the image does not disappear when the camera is directly above the scene, 
+                //To make sure that the image does not disappear when the camera is directly above the scene, 
                 //we increase the value for phi when it is near 0.
                 if (Math.abs(cosPhiForUp) <= 0.02)
                 {
@@ -226,18 +226,18 @@ public class RobotRace extends Base
                 Vector pos1 = robots[1].position;
                 Vector pos2 = robots[2].position;
                 Vector pos3 = robots[3].position;
-                
+
                 Vector total = pos0.add(pos1).add(pos2).add(pos3);
                 double centerX = total.x() / 4;
                 double centerY = total.y() / 4;
                 double centerZ = total.z() / 4;
-                
+
                 centerPoint = new Vector(centerX, centerY, centerZ);
-                Vector eyePoint = centerPoint.add(new Vector(5, 5, 100));
+                Vector eyePoint = centerPoint.add(new Vector(5, 5, 300));
                 eyeX = eyePoint.x();
                 eyeY = eyePoint.y();
                 eyeZ = eyePoint.z();
-                up = eyePoint.add(new Vector(0, -1, 0));
+                up = new Vector(0, -1, 0);
                 break;
             case 2:
                 break;
@@ -318,12 +318,14 @@ public class RobotRace extends Base
 
             Vector tangent = raceTrack.getTangent(gs.trackNr, lap / r.speed % 1);
             double anglePhi = Math.atan2(tangent.x(), tangent.y());
-            double angleTheta = 0;
+            double anglethetax = Math.atan(tangent.z()/tangent.y());
+            double anglethetay = Math.atan(tangent.z()/tangent.x());
+            
             //Math.toDegrees(anglePhi);
 
             double[] rotationXYZ = new double[]
             {
-                0, 0, anglePhi
+                anglethetax, anglethetay, anglePhi
             };
 
             r.rotate(rotationXYZ);
