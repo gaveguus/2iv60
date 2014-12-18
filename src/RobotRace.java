@@ -45,7 +45,7 @@ import robotrace.Vector;
  */
 public class RobotRace extends Base
 {
-   
+
     private float rotation;
 
     /**
@@ -117,6 +117,7 @@ public class RobotRace extends Base
     {
         0.3f, 0.3f, 0.3f, 1
     };
+
     /**
      * Called upon the start of the application. Primarily used to configure
      * OpenGL.
@@ -191,21 +192,61 @@ public class RobotRace extends Base
         // Update the view according to the camera mode
         camera.update(gs.camMode);
 
-        //Get coordinate values for camera
-        float phi = gs.phi;
-        double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
+        double eyeX = 0;
+        double eyeY = 0;
+        double eyeZ = 0;
+
+        Vector up = new Vector(0, 0, 1);
+        Vector centerPoint = new Vector(0, 0, 0);
+
+        switch (gs.camMode)
+        {
+            case 0:
+
+                //Get coordinate values for camera
+                float phi = gs.phi;
+                double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
 
         //To make sure that the image does not disappear when the camera is directly above the scene, 
-        //we increase the value for phi when it is near 0.
-        if (Math.abs(cosPhiForUp) <= 0.02)
-        {
-            phi += 0.025;
-        }
+                //we increase the value for phi when it is near 0.
+                if (Math.abs(cosPhiForUp) <= 0.02)
+                {
+                    phi += 0.025;
+                }
 
-        //Get the x, y and z values for the camera.
-        double x = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
-        double y = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
-        double z = gs.vDist * Math.cos(phi);
+                //Get the x, y and z values for the camera.
+                eyeX = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
+                eyeY = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
+                eyeZ = gs.vDist * Math.cos(phi);
+
+                up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
+                break;
+            case 1:
+                Vector pos0 = robots[0].position;
+                Vector pos1 = robots[1].position;
+                Vector pos2 = robots[2].position;
+                Vector pos3 = robots[3].position;
+                
+                Vector total = pos0.add(pos1).add(pos2).add(pos3);
+                double centerX = total.x() / 4;
+                double centerY = total.y() / 4;
+                double centerZ = total.z() / 4;
+                
+                centerPoint = new Vector(centerX, centerY, centerZ);
+                Vector eyePoint = centerPoint.add(new Vector(5, 5, 100));
+                eyeX = eyePoint.x();
+                eyeY = eyePoint.y();
+                eyeZ = eyePoint.z();
+                up = eyePoint.add(new Vector(0, -1, 0));
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+
+        }
 
         //This light is located near the camera
         float posLight2[] =
@@ -215,8 +256,9 @@ public class RobotRace extends Base
         gl.glLightfv(GL_LIGHT1, GL_POSITION, posLight2, 0);
 
         //Move the camera to the new coordinates
-        camera.eye = new Vector(x, y, z);
-        camera.up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
+        camera.eye = new Vector(eyeX, eyeY, eyeZ);
+        camera.up = up;
+        camera.center = centerPoint;
 
         glu.gluLookAt(camera.eye.x(), camera.eye.y(), camera.eye.z(),
                 camera.center.x(), camera.center.y(), camera.center.z(),
@@ -268,13 +310,13 @@ public class RobotRace extends Base
         for (int i = 0; i < robots.length; i++)
         {
             Robot r = robots[i];
-            
-            r.move(raceTrack.getPoint((float) (lap / r.speed % 1), raceTrack.getShift(i)));
-            
+
+            r.move(raceTrack.getPoint(gs.trackNr, (float) (lap / r.speed % 1), raceTrack.getShift(i)));
+
             r.drawStickFigure = gs.showStick;
             r.draw();
 
-            Vector tangent = raceTrack.getTangent(lap / r.speed % 1);
+            Vector tangent = raceTrack.getTangent(gs.trackNr, lap / r.speed % 1);
             double anglePhi = Math.atan2(tangent.x(), tangent.y());
             double angleTheta = 0;
             //Math.toDegrees(anglePhi);
@@ -448,7 +490,7 @@ public class RobotRace extends Base
          * The materials' shininess
          */
         float shininess;
-        
+
         Texture texture;
 
         /**
@@ -462,7 +504,7 @@ public class RobotRace extends Base
             this.shininess = shininess;
             this.texture = texture;
         }
-        
+
         private Material(float[] diffuse, float[] specular, float[] ambient, float shininess)
         {
             this(diffuse, specular, ambient, shininess, null);
@@ -952,6 +994,9 @@ public class RobotRace extends Base
         public boolean drawStickFigure = true;
 
         public double speed;
+
+        private Random rand;
+
         /**
          * Constructs the robot with initial parameters.
          */
@@ -964,6 +1009,8 @@ public class RobotRace extends Base
             //Use a torso as the root limb
             rootLimb = new Torso(this);
 
+            this.rand = rand;
+
             this.speed = 8 + rand.nextDouble() * 2;
             // code goes here ...
         }
@@ -971,6 +1018,7 @@ public class RobotRace extends Base
         public void move(Vector offset)
         {
             this.position = startPosition.add(offset);
+            this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 100);
         }
 
         public void rotate(double[] rotationXYZ)
@@ -1123,10 +1171,21 @@ public class RobotRace extends Base
          */
         public RaceTrack()
         {
-            // code goes here ...
+            controlPointsLTrack = new Vector[]
+            {
+                new Vector(0, 0, 0),
+                new Vector(-40, 0, 0),
+                new Vector(0, 20, 0),
+                new Vector(40, 0, 0),
+                new Vector(20, -20, 0),
+                new Vector(0, 0, 0),
+                new Vector(0, 0, 0),
+                new Vector(0, 0, 0)
+            };
         }
-        
-        public float getShift(int trackNr) {
+
+        public float getShift(int trackNr)
+        {
             return trackNr * 6;
         }
 
@@ -1134,7 +1193,7 @@ public class RobotRace extends Base
          * Draws this track, based on the selected track number.
          */
         public void draw(int trackNr)
-        { 
+        {
             // The test track is selected
             if (0 == trackNr)
             {
@@ -1149,13 +1208,12 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    drawOTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
+                    drawTestTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
                 }
 
                 // The O-track is selected
             } else if (1 == trackNr)
             {
-                // code goes here ...
 
                 // The L-track is selected
             } else if (2 == trackNr)
@@ -1175,7 +1233,7 @@ public class RobotRace extends Base
             }
         }
 
-        private void drawOTrack(double widthX, double widthY, double trackWidth, int segments)
+        private void drawTestTrack(double widthX, double widthY, double trackWidth, int segments)
         {
             gl.glBegin(GL_QUAD_STRIP);
             double segmentLength = (2 * Math.PI) / segments;
@@ -1183,7 +1241,7 @@ public class RobotRace extends Base
             {
                 double alpha = segmentLength * i;
 
-                Vector p = new Vector((widthX-3) * Math.cos(alpha), (widthY-3) * Math.sin(alpha), 0);
+                Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
 
                 gl.glVertex3d(p.x(), p.y(), p.z());
@@ -1196,20 +1254,43 @@ public class RobotRace extends Base
         /**
          * Returns the position of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getPoint(double t, double shift)
+        public Vector getPoint(int trackNr, double t, double shift)
         {
-            Vector position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t), (shift + 70) * Math.sin(2 * Math.PI * t), 1d);
-            //System.out.println(t);
-            return position; // <- code goes here
+            switch (trackNr)
+            {
+                case 0:
+                    Vector position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t), (shift + 70) * Math.sin(2 * Math.PI * t), 1d);
+                    //System.out.println(t);
+                    return position; // <- code goes here
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+
+            return new Vector(0, 0, 0);
         }
 
         /**
          * Returns the tangent of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getTangent(double t)
+        public Vector getTangent(int trackNr, double t)
         {
-            Vector tangent = new Vector(28 * Math.PI * Math.cos(2 * Math.PI * t), -20 * Math.PI * Math.sin(2 * Math.PI * t), 0);
-            return tangent; // <- code goes here
+            switch (trackNr)
+            {
+                case 0:
+                    Vector tangent = new Vector(28 * Math.PI * Math.cos(2 * Math.PI * t), -20 * Math.PI * Math.sin(2 * Math.PI * t), 0);
+                    return tangent; // <- code goes here
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+            return new Vector(0, 0, 0);
         }
 
     }
@@ -1232,7 +1313,7 @@ public class RobotRace extends Base
          * Draws the terrain.
          */
         public void draw()
-        {            
+        {
             gl.glPushMatrix();
             gl.glColor3f(0.2f, 0.7f, 0.1f);
             gl.glTranslated(0, 0, -0.1);
