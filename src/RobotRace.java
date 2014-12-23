@@ -2,6 +2,7 @@
 import com.jogamp.opengl.util.texture.Texture;
 import java.util.HashMap;
 import java.util.Random;
+import static javax.media.opengl.GL.GL_LINES;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_DIFFUSE;
@@ -143,8 +144,9 @@ public class RobotRace extends Base
         // This can however cause problems on some graphics cards.
         gl.glEnable(GL_LINE_SMOOTH);
         gl.glEnable(GL_POLYGON_SMOOTH);
-        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-        gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+//        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+//        gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
         // Enable depth testing.
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LESS);
@@ -189,65 +191,6 @@ public class RobotRace extends Base
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
 
-        // Update the view according to the camera mode
-        camera.update(gs.camMode);
-
-        double eyeX = 0;
-        double eyeY = 0;
-        double eyeZ = 0;
-
-        Vector up = new Vector(0, 0, 1);
-        Vector centerPoint = new Vector(0, 0, 0);
-
-        switch (gs.camMode)
-        {
-            case 0:
-
-                //Get coordinate values for camera
-                float phi = gs.phi;
-                double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
-
-                //To make sure that the image does not disappear when the camera is directly above the scene, 
-                //we increase the value for phi when it is near 0.
-                if (Math.abs(cosPhiForUp) <= 0.02)
-                {
-                    phi += 0.025;
-                }
-
-                //Get the x, y and z values for the camera.
-                eyeX = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
-                eyeY = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
-                eyeZ = gs.vDist * Math.cos(phi);
-
-                up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
-                break;
-            case 1:
-                Vector pos0 = robots[0].position;
-                Vector pos1 = robots[1].position;
-                Vector pos2 = robots[2].position;
-                Vector pos3 = robots[3].position;
-
-                Vector total = pos0.add(pos1).add(pos2).add(pos3);
-                double centerX = total.x() / 4;
-                double centerY = total.y() / 4;
-                double centerZ = total.z() / 4;
-
-                centerPoint = new Vector(centerX, centerY, centerZ);
-                Vector eyePoint = centerPoint.add(new Vector(5, 5, 300));
-                eyeX = eyePoint.x();
-                eyeY = eyePoint.y();
-                eyeZ = eyePoint.z();
-                up = new Vector(0, -1, 0);
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-
-        }
-
         //This light is located near the camera
         float posLight2[] =
         {
@@ -255,14 +198,8 @@ public class RobotRace extends Base
         };
         gl.glLightfv(GL_LIGHT1, GL_POSITION, posLight2, 0);
 
-        //Move the camera to the new coordinates
-        camera.eye = new Vector(eyeX, eyeY, eyeZ);
-        camera.up = up;
-        camera.center = centerPoint;
-
-        glu.gluLookAt(camera.eye.x(), camera.eye.y(), camera.eye.z(),
-                camera.center.x(), camera.center.y(), camera.center.z(),
-                camera.up.x(), camera.up.y(), camera.up.z());
+        // Update the view according to the camera mode
+        camera.update(gs.camMode);
 
         //This light stays at the same location
         float posLight1[] =
@@ -311,18 +248,32 @@ public class RobotRace extends Base
         {
             Robot r = robots[i];
 
-            r.move(raceTrack.getPoint(gs.trackNr, (float) (lap / r.speed % 1), raceTrack.getShift(i)));
+            double distance = (lap / r.speed % 1);
+            r.distanceTraversed += distance;
+
+            r.move(raceTrack.getPoint(gs.trackNr, (float) distance, raceTrack.getShift(i)));
 
             r.drawStickFigure = gs.showStick;
             r.draw();
 
-            Vector tangent = raceTrack.getTangent(gs.trackNr, lap / r.speed % 1);
-            double anglePhi = Math.atan2(tangent.x(), tangent.y());
-            double anglethetax = Math.atan(tangent.z()/tangent.y());
-            double anglethetay = Math.atan(tangent.z()/tangent.x());
-            
-            //Math.toDegrees(anglePhi);
+            Vector tangent = raceTrack.getTangent(gs.trackNr, lap / r.speed % 1, i);
+            double anglePhi = Math.atan2(tangent.y(), tangent.x());
+            double anglethetax = Math.atan(tangent.z() / tangent.y());
+            double anglethetay = Math.atan(tangent.z() / tangent.x());
 
+            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / r.speed % 1, i);
+            double normalX = -alongTrack.y();
+            double normalY = alongTrack.x();
+            double normalZ = alongTrack.z();
+            Vector normal = r.position.add(new Vector(50 * normalX, 50 * normalY, normalZ));
+
+            gl.glBegin(GL_LINES);
+            gl.glVertex3f((float)r.position.x(), (float)r.position.y(), (float)r.position.z());
+            gl.glVertex3f((float)normal.x(), (float)normal.y(), (float)normal.z());
+            gl.glEnd();
+            gl.glFlush();
+
+            //Math.toDegrees(anglePhi);
             double[] rotationXYZ = new double[]
             {
                 anglethetax, anglethetay, anglePhi
@@ -984,6 +935,7 @@ public class RobotRace extends Base
         protected Vector startPosition;
         protected Vector position;
         protected double rotate;
+        public double distanceTraversed;
 
         /**
          * The material from which this robot is built.
@@ -1007,6 +959,7 @@ public class RobotRace extends Base
             this.material = material;
             this.startPosition = startPosition;
             this.position = startPosition;
+            this.distanceTraversed = 0;
 
             //Use a torso as the root limb
             rootLimb = new Torso(this);
@@ -1102,6 +1055,10 @@ public class RobotRace extends Base
             {
                 setDefaultMode();
             }
+
+            glu.gluLookAt(camera.eye.x(), camera.eye.y(), camera.eye.z(),
+                    camera.center.x(), camera.center.y(), camera.center.z(),
+                    camera.up.x(), camera.up.y(), camera.up.z());
         }
 
         /**
@@ -1110,7 +1067,31 @@ public class RobotRace extends Base
          */
         private void setDefaultMode()
         {
-            // code goes here ...
+
+            Vector centerPoint = new Vector(0, 0, 0);
+
+            //Get coordinate values for camera
+            float phi = gs.phi;
+            double cosPhiForUp = Math.cos(phi + (0.5 * Math.PI));
+
+            //To make sure that the image does not disappear when the camera is directly above the scene, 
+            //we increase the value for phi when it is near 0.
+            if (Math.abs(cosPhiForUp) <= 0.02)
+            {
+                phi += 0.025;
+            }
+
+            //Get the x, y and z values for the camera.
+            double eyeX = gs.vDist * Math.cos(gs.theta) * Math.sin(-phi); //r*cos(theta)*sin(phi)
+            double eyeY = gs.vDist * Math.sin(gs.theta) * Math.sin(phi);
+            double eyeZ = gs.vDist * Math.cos(phi);
+
+            up = new Vector(0, 0, Math.cos(phi + (0.5 * Math.PI)));
+
+            //Move the camera to the new coordinates
+            camera.eye = new Vector(eyeX, eyeY, eyeZ);
+            camera.up = up;
+            camera.center = centerPoint;
         }
 
         /**
@@ -1119,7 +1100,27 @@ public class RobotRace extends Base
          */
         private void setHelicopterMode()
         {
-            // code goes here ...
+            Vector pos0 = robots[0].position;
+            Vector pos1 = robots[1].position;
+            Vector pos2 = robots[2].position;
+            Vector pos3 = robots[3].position;
+
+            Vector total = pos0.add(pos1).add(pos2).add(pos3);
+            double centerX = total.x() / 4;
+            double centerY = total.y() / 4;
+            double centerZ = total.z() / 4;
+
+            Vector centerPoint = new Vector(centerX, centerY, centerZ);
+            Vector eyePoint = centerPoint.add(new Vector(5, 5, 300));
+            double eyeX = eyePoint.x();
+            double eyeY = eyePoint.y();
+            double eyeZ = eyePoint.z();
+            up = new Vector(0, -1, 0);
+
+            //Move the camera to the new coordinates
+            camera.eye = new Vector(eyeX, eyeY, eyeZ);
+            camera.up = up;
+            camera.center = centerPoint;
         }
 
         /**
@@ -1128,7 +1129,26 @@ public class RobotRace extends Base
          */
         private void setMotorCycleMode()
         {
-            // code goes here ...
+            //We use robots[0] for now
+            int laneNr = 0;
+            Robot robot = robots[laneNr];
+
+            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / robot.speed % 1, laneNr);
+
+            double normalX = -(alongTrack.y());
+            double normalY = alongTrack.x();
+            double normalZ = alongTrack.z();
+            
+            Vector normalUnit = new Vector(normalX, normalY, normalZ).normalized();
+            Vector normal = robot.position.add(new Vector(100 * normalUnit.x(), 100 * normalUnit.y(), normalUnit.z()));
+
+            up = normal.cross(alongTrack);
+            up = new Vector(up.x(), up.y(), -up.z());
+
+            //Move the camera to the new coordinates
+            camera.eye = normal;
+            camera.up = up;
+            camera.center = robot.position;
         }
 
         /**
@@ -1278,21 +1298,11 @@ public class RobotRace extends Base
         /**
          * Returns the tangent of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getTangent(int trackNr, double t)
+        public Vector getTangent(int trackNr, double t, int laneNr)
         {
-            switch (trackNr)
-            {
-                case 0:
-                    Vector tangent = new Vector(28 * Math.PI * Math.cos(2 * Math.PI * t), -20 * Math.PI * Math.sin(2 * Math.PI * t), 0);
-                    return tangent; // <- code goes here
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-            }
-            return new Vector(0, 0, 0);
+            Vector point1 = getPoint(trackNr, t, raceTrack.getShift(laneNr));
+            Vector point2 = getPoint(trackNr, t + 0.001, raceTrack.getShift(laneNr));
+            return point2.subtract(point1);
         }
 
     }
