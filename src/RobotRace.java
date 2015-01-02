@@ -2,6 +2,8 @@
 import com.jogamp.opengl.util.texture.Texture;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import static javax.media.opengl.GL.GL_LINES;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -185,7 +187,7 @@ public class RobotRace extends Base
 
         // Set the perspective.
         // Modify this to meet the requirements in the assignment.
-        glu.gluPerspective(gs.vWidth, (float) gs.w / (float) gs.h, 0.01 * gs.vDist, 10 * gs.vDist);
+        glu.gluPerspective(gs.vWidth, (float) gs.w / (float) gs.h, 0.05 * gs.vDist, 50 * gs.vDist);
 
         // Set camera.
         gl.glMatrixMode(GL_MODELVIEW);
@@ -261,17 +263,14 @@ public class RobotRace extends Base
             double anglethetax = Math.atan(tangent.z() / tangent.y());
             double anglethetay = Math.atan(tangent.z() / tangent.x());
 
-            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / r.speed % 1, i);
-            double normalX = -alongTrack.y();
-            double normalY = alongTrack.x();
-            double normalZ = alongTrack.z();
-            Vector normal = r.position.add(new Vector(50 * normalX, 50 * normalY, normalZ));
-
-            gl.glBegin(GL_LINES);
-            gl.glVertex3f((float)r.position.x(), (float)r.position.y(), (float)r.position.z());
-            gl.glVertex3f((float)normal.x(), (float)normal.y(), (float)normal.z());
-            gl.glEnd();
-            gl.glFlush();
+//            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / r.speed % 1, i);
+//            Vector parallel = alongTrack.normalized().scale(25).add(r.position);
+//
+//            gl.glBegin(GL_LINES);
+//            gl.glVertex3f((float) r.position.x(), (float) r.position.y(), (float) r.position.z());
+//            gl.glVertex3f((float) parallel.x(), (float) parallel.y(), (float) parallel.z());
+//            gl.glEnd();
+//            gl.glFlush();
 
             //Math.toDegrees(anglePhi);
             double[] rotationXYZ = new double[]
@@ -1007,6 +1006,9 @@ public class RobotRace extends Base
     private class Camera
     {
 
+        int autoMode = 1;
+        int oldTime = 0;
+
         /**
          * The position of the camera.
          */
@@ -1048,9 +1050,32 @@ public class RobotRace extends Base
                 // Auto mode
             } else if (4 == mode)
             {
-                // code goes here...
+                if (autoMode % 4 == 0)
+                {
+                    autoMode = 1;
+                }
+                
+                int time = (int) gs.tAnim;
+                
+                switch (autoMode) {
+                    case 1:
+                        setHelicopterMode();
+                        break;
+                    case 2:
+                        setMotorCycleMode();
+                        break;
+                    case 3:
+                        setFirstPersonMode();
+                        break;
+                }
 
-                // Default mode
+                if (time != oldTime && time % 4 == 0)
+                {
+                    autoMode++;
+                }
+                
+                oldTime = time;
+
             } else
             {
                 setDefaultMode();
@@ -1138,7 +1163,7 @@ public class RobotRace extends Base
             double normalX = -(alongTrack.y());
             double normalY = alongTrack.x();
             double normalZ = alongTrack.z();
-            
+
             Vector normalUnit = new Vector(normalX, normalY, normalZ).normalized();
             Vector normal = robot.position.add(new Vector(100 * normalUnit.x(), 100 * normalUnit.y(), normalUnit.z()));
 
@@ -1157,7 +1182,26 @@ public class RobotRace extends Base
          */
         private void setFirstPersonMode()
         {
-            // code goes here ...
+            //We use robots[0] for now
+            int laneNr = 0;
+            Robot robot = robots[laneNr];
+
+            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / robot.speed % 1, laneNr);
+
+            double normalX = -(alongTrack.y());
+            double normalY = alongTrack.x();
+            double normalZ = alongTrack.z();
+
+            Vector normalUnit = new Vector(normalX, normalY, normalZ).normalized();
+            Vector normal = robot.position.add(new Vector(100 * normalUnit.x(), 100 * normalUnit.y(), normalUnit.z()));
+
+            up = normal.cross(alongTrack).normalized();
+            up = new Vector(up.x(), up.y(), -up.z());
+
+            camera.center = up.scale(6).add(robot.position);
+            Vector parallel = camera.center.subtract(alongTrack.normalized().scale(15));
+
+            camera.eye = up.scale(2).add(parallel);
         }
 
     }
