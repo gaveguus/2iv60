@@ -271,7 +271,6 @@ public class RobotRace extends Base
 //            gl.glVertex3f((float) parallel.x(), (float) parallel.y(), (float) parallel.z());
 //            gl.glEnd();
 //            gl.glFlush();
-
             //Math.toDegrees(anglePhi);
             double[] rotationXYZ = new double[]
             {
@@ -1054,10 +1053,11 @@ public class RobotRace extends Base
                 {
                     autoMode = 1;
                 }
-                
+
                 int time = (int) gs.tAnim;
-                
-                switch (autoMode) {
+
+                switch (autoMode)
+                {
                     case 1:
                         setHelicopterMode();
                         break;
@@ -1073,7 +1073,7 @@ public class RobotRace extends Base
                 {
                     autoMode++;
                 }
-                
+
                 oldTime = time;
 
             } else
@@ -1301,8 +1301,11 @@ public class RobotRace extends Base
 
         private void drawTestTrack(double widthX, double widthY, double trackWidth, int segments)
         {
+            track.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             double segmentLength = (2 * Math.PI) / segments;
+            
+            //Draw the top of the track
             for (int i = 0; i < segments + 1; i++)
             {
                 double alpha = segmentLength * i;
@@ -1310,9 +1313,102 @@ public class RobotRace extends Base
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
 
-                gl.glVertex3d(p.x(), p.y(), p.z());
-                gl.glVertex3d(q.x(), q.y(), q.z());
+                int textureX = 0;
+                int textureY = 0;
 
+                if (i % 2 != 0)
+                {
+                    textureX = 1;
+                    textureY = 0;
+                }
+
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(p.x(), p.y(), p.z());
+
+                if (i % 2 == 0)
+                {
+                    textureX = 0;
+                    textureY = 1;
+                } else
+                {
+                    textureX = 1;
+                    textureY = 1;
+                }
+
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(q.x(), q.y(), q.z());
+            }
+            gl.glEnd();
+            
+            //Draw the side of the track (inside)
+            brick.bind(gl);
+            gl.glBegin(GL_QUAD_STRIP);
+            for (int i = 0; i < segments + 1; i++)
+            {
+                double alpha = segmentLength * i;
+                Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
+                Vector q = p.add(new Vector(0, 0, -3));
+                
+                int textureX = 0;
+                int textureY = 0;
+
+                if (i % 2 != 0)
+                {
+                    textureX = 1;
+                    textureY = 0;
+                }
+
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(p.x(), p.y(), p.z());
+
+                if (i % 2 == 0)
+                {
+                    textureX = 0;
+                    textureY = 1;
+                } else
+                {
+                    textureX = 1;
+                    textureY = 1;
+                }
+
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(q.x(), q.y(), q.z());
+            }
+            gl.glEnd();
+            
+            //Draw the side of the track (outside)
+            gl.glBegin(GL_QUAD_STRIP);
+            for (int i = 0; i < segments + 1; i++)
+            {
+                double alpha = segmentLength * i;
+                Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
+                p = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
+                Vector q = p.add(new Vector(0, 0, -3));
+                
+                int textureX = 0;
+                int textureY = 0;
+
+                if (i % 2 != 0)
+                {
+                    textureX = 1;
+                    textureY = 0;
+                }
+
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(p.x(), p.y(), p.z());
+
+                if (i % 2 == 0)
+                {
+                    textureX = 0;
+                    textureY = 1;
+                } else
+                {
+                    textureX = 1;
+                    textureY = 1;
+                }
+
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(q.x(), q.y(), q.z());
             }
             gl.glEnd();
         }
@@ -1372,7 +1468,7 @@ public class RobotRace extends Base
         {
             gl.glPushMatrix();
             gl.glColor3f(0.2f, 0.7f, 0.1f);
-            gl.glTranslated(0, 0, -0.1);
+            gl.glTranslated(0, 0, -3.1);
             gl.glRectf(-100, -100, 100, 100);
             gl.glPopMatrix();
         }
