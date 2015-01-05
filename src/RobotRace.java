@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import static javax.media.opengl.GL.GL_LINES;
 import static javax.media.opengl.GL2.*;
+import static javax.media.opengl.GL2GL3.GL_QUADS;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_DIFFUSE;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
@@ -341,6 +342,47 @@ public class RobotRace extends Base
         glut.glutSolidSphere(0.1, 20, 20);
 
     }
+    
+    public void drawCube(double size, Texture texture) {
+            if (texture != null)
+            {
+                texture.bind(gl);
+            }
+            
+            gl.glBegin(GL_QUADS);
+            
+            gl.glVertex3d(-0.5, -0.5, -0.5);
+            gl.glVertex3d(0.5, -0.5, -0.5);
+            gl.glVertex3d(0.5, -0.5, 0.5);
+            gl.glVertex3d(-0.5, -0.5, 0.5);
+            
+            gl.glVertex3d(0.5, -0.5, -0.5);
+            gl.glVertex3d(0.5, 0.5, -0.5);
+            gl.glVertex3d(0.5, 0.5, 0.5);
+            gl.glVertex3d(0.5, -0.5, 0.5);
+            
+            gl.glVertex3d(0.5, 0.5, -0.5);
+            gl.glVertex3d(0.5, 0.5, 0.5);
+            gl.glVertex3d(-0.5, 0.5, 0.5);
+            gl.glVertex3d(-0.5, 0.5, -0.5);
+            
+            gl.glVertex3d(-0.5, 0.5, -0.5);
+            gl.glVertex3d(-0.5, 0.5, 0.5);
+            gl.glVertex3d(-0.5, -0.5, 0.5);
+            gl.glVertex3d(-0.5, -0.5, -0.5);
+            
+            gl.glVertex3d(-0.5, -0.5, -0.5);
+            gl.glVertex3d(0.5, -0.5, -0.5);
+            gl.glVertex3d(-0.5, 0.5, 0.5);
+            gl.glVertex3d(-0.5, 0.5, -0.5);
+            
+            gl.glVertex3d(0.5, -0.5, 0.5);
+            gl.glVertex3d(0.5, 0.5, 0.5);
+            gl.glVertex3d(-0.5, 0.5, 0.5);
+            gl.glVertex3d(-0.5, -0.5, 0.5);
+            
+            gl.glEnd();
+        }
 
     /**
      * Materials that can be used for the robots.
@@ -665,7 +707,7 @@ public class RobotRace extends Base
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.65);
                 gl.glScaled(3.4, 3.4, 5.5);
-                glut.glutSolidCube(1);
+                drawCube(1, null);
                 gl.glPopMatrix();
 
                 //Draw the front block
@@ -1480,6 +1522,7 @@ public class RobotRace extends Base
         {
             return 0; // <- code goes here
         }
+ 
     }
 
     /**
