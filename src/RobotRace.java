@@ -13,6 +13,7 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT1;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
+import jogamp.opengl.glu.mipmap.BuildMipmap;
 import robotrace.Base;
 import robotrace.Vector;
 
@@ -1257,39 +1258,195 @@ public class RobotRace extends Base
         /**
          * Array with control points for the O-track.
          */
-        private Vector[] controlPointsOTrack;
-
+        private Vector[][] controlPointsOTrack  = {    { new Vector (-40,0,0), new Vector(40,0,0), new Vector(-40,40,0),new Vector(40,40,0)},
+                                                       { new Vector(40,0,0), new Vector(-40,0,0), new Vector(40,-40,0), new Vector(-40,-40,0)},
+                                                       { new Vector(-40,-3,0), new Vector(-40,3,0), new Vector(0,0,0), new Vector(0,0,0)}
+                                                    };
+        private int[] BuildOTrack = {2,2,0};
         /**
          * Array with control points for the L-track.
          */
-        private Vector[] controlPointsLTrack;
-
+        private Vector[][] controlPointsLTrack = {  { new Vector(0,-75,0), new Vector(60,-75,0), new Vector(0,0,0),new Vector(0,0,0)},
+                                                    { new Vector(60,-75,0), new Vector(60,-15,0), new Vector(90,-75,0), new Vector(90,-15,0)},
+                                                    { new Vector(60,-15,0), new Vector(45,-15,0), new Vector(0,0,0), new Vector(0,0,0)},
+                                                    { new Vector(45,-15,0), new Vector(30,0,0), new Vector(35,-15,0), new Vector(0,0,0)},
+                                                    { new Vector(30,0,0), new Vector(30,90,0), new Vector(0,0,0), new Vector(0,0,0)},
+                                                    { new Vector(30,90,0), new Vector(-30,90,0), new Vector(30,120,0), new Vector(-30,120,0)},
+                                                    { new Vector(-30,90,0), new Vector(-30,-15,0), new Vector(0,0,0), new Vector(0,0,0)},
+                                                    { new Vector(-30,-15,0), new Vector(0,-75,0), new Vector(-30,-75,0), new Vector(0,0,0)},
+                                                    { new Vector(-2,-75,0), new Vector(2,-75,0), new Vector(0,0,0), new Vector(0,0,0)},                                            
+                                                    };
+        private int[] BuildLTrack = {0,2,0,1,0,2,0,1,0};
         /**
          * Array with control points for the C-track.
          */
-        private Vector[] controlPointsCTrack;
-
+        private Vector[][] controlPointsCTrack = {  { new Vector (30,45,0), new Vector(30,75,0), new Vector(45,45,0),new Vector(45,75,0)},
+                                                    { new Vector(30,75,0), new Vector(30,-75,0), new Vector(-60,75,0), new Vector(-60,-75,0)},
+                                                    { new Vector(30,-75,0), new Vector(30,-45,0), new Vector(45,-75,0), new Vector(45,-45,0)},
+                                                    { new Vector(30,-45,0), new Vector(30,45,0), new Vector(-15,-45,0), new Vector(-15,45,0)},
+                                                    { new Vector(28,45,0), new Vector(32,45,0), new Vector(0,0,0), new Vector(0,0,0)}
+                                                };
+        private int[] BuildCTrack = {2,2,2,2,0};
         /**
          * Array with control points for the custom track.
          */
-        private Vector[] controlPointsCustomTrack;
-
+        private Vector[][] controlPointsCustomTrack = { { new Vector (1,0,0), new Vector(10,0,0), new Vector(0,0,0),new Vector(0,0,0)},
+                                                        { new Vector(10,0,0), new Vector(20,0,0), new Vector(0,0,0), new Vector(0,0,0)},
+                                                        { new Vector(20,0,0), new Vector(30,0,0), new Vector(0,0,0), new Vector(0,0,0)}
+                                 };
+        private int[] BuildCustomTrack = {0,0,0};
         /**
          * Constructs the race track, sets up display lists.
          */
+        public Vector []findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment)
+        {
+            Vector l1,l2;
+            if (Buildtype[j] == 0)
+                        {
+                            l1 = straight(Points[j][0], Points[j][1], step);
+                            l2 = straight(Points[j][0], Points[j][1], step+segment);
+                         
+                        }
+                    else if (Buildtype[j] == 1)
+                        {
+                            l1 = bent_90(Points[j][0], Points[j][1], Points[j][2], step);
+                            l2 = bent_90(Points[j][0], Points[j][1], Points[j][2], step+segment);
+                        }
+                    else if (Buildtype[j] == 2)
+                        {
+                            l1 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3],step);
+                            l2 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3],step+segment);                         
+                        }
+                    else
+                    {
+                        l1 = Vector.O;
+                        l2 = Vector.O;
+                        System.out.println("Invallid Buildtype! made l1 == l2 == {0,0,0}" +" "+Buildtype[j]);
+                        
+                    }
+            Vector [] back = {l1,l2};
+            return back;
+        }
+        
+        public void trackprint(int i,Vector p, Vector q)
+        {
+            int textureX = 0;
+                    int textureY = 0;
+                    if (i % 2 != 0)
+                    {
+                        textureX = 1;
+                        textureY = 0;
+                    }
+                    gl.glTexCoord2d(textureX, textureY);
+                    gl.glVertex3d(p.x(), p.y(), p.z());
+                    if (i % 2 == 0)
+                    {
+                        textureX = 0;
+                        textureY = 1;
+                    } else
+                    {
+                        textureX = 1;
+                        textureY = 1;
+                    }
+                    gl.glTexCoord2d(textureX, textureY);
+                    gl.glVertex3d(q.x(), q.y(), q.z());
+        }
+        public Vector straight(Vector A,Vector B, Double t)
+        {
+            Vector point = A.scale(1-t).add(B.scale(t));
+            return point;
+        }
+        
+        public Vector bent_90(Vector A, Vector B, Vector C,double t)
+        {
+            Vector point = A.scale(Math.pow((1-t), 2)).add(C.scale(2*(1-t)*t)).add(B.scale(Math.pow(t, 2)));
+            return point;
+        }
+        
+        public Vector bent_180(Vector A, Vector B, Vector C, Vector D, double t)
+        {
+            
+            Vector point = A.scale(Math.pow(1-t,3)).add(C.scale(3*Math.pow((1-t),2)*t)).add(D.scale(3*(1-t)*Math.pow(t,2))).add(B.scale(Math.pow(t,3)));
+            return point;
+        }
+        public void TrackConstructor(Vector [] [] Points, int Buildtype[], Double trackwidth, int pos)
+        {
+        // draw part of top side of the track
+            track.bind(gl);
+            gl.glBegin(GL_QUAD_STRIP);
+            int times = Buildtype.length;
+            for (int j=0;j<times;j++)
+            {
+                double stappen = 100;
+                double segment = 1/stappen;
+                for (int i = 0; i <stappen; i++)
+                {
+                    double step = segment *i;                  
+                    Vector []beginandend = findpoint(Buildtype, Points, j, step, segment);
+                    Vector l1 = beginandend[0];
+                    Vector l2 = beginandend[1];
+                    
+                    Vector ll = l2.subtract(l1);
+                    Double s = ll.length();
+                    Vector p = (new Vector(-ll.y()/s*trackwidth*(3-pos),ll.x()/s*trackwidth*(3-pos),0)).add(l1);
+                    Vector q = (new Vector(-ll.y()/s*trackwidth*(2-pos),ll.x()/s*trackwidth*(2-pos),0)).add(l2);
+                    
+                    trackprint(i, p, q);
+                }
+            }
+            gl.glEnd();
+            
+        // Draw the inside of the track
+            brick.bind(gl);
+            gl.glBegin(GL_QUAD_STRIP);
+            for (int j=0;j<times;j++)
+            {
+                double stappen = 100;
+                double segment = 1/stappen;
+                for (int i = 0; i <stappen; i++)
+                {      
+                    double step = segment *i;
+                    Vector []beginandend = findpoint(Buildtype, Points, j, step, segment);
+                    Vector l1 = beginandend[0];
+                    Vector l2 = beginandend[1];
+                    
+                    Vector ll = l2.subtract(l1);
+                    Double s = ll.length();
+                    Vector p = (new Vector(-ll.y()/s*trackwidth*2,ll.x()/s*trackwidth*2,0)).add(l1);
+                    Vector q = p.add(new Vector (0,0,-3));
+                    trackprint(i, p, q);
+                }
+            }
+            gl.glEnd();
+            
+            // Draw the uitside of the track
+            brick.bind(gl);
+            gl.glBegin(GL_QUAD_STRIP);
+            for (int j=0;j<times;j++)
+            {
+                double stappen = 100;
+                double segment = 1/stappen;
+                for (int i = 0; i <stappen; i++)
+                {      
+                    double step = segment *i;
+                    Vector []beginandend = findpoint(Buildtype, Points, j, step, segment);
+                    Vector l1 = beginandend[0];
+                    Vector l2 = beginandend[1];
+                    
+                    Vector ll = l2.subtract(l1);
+                    Double s = ll.length();
+                    Vector p = (new Vector(ll.y()/s*trackwidth*2,-ll.x()/s*trackwidth*2,0)).add(l1);
+                    Vector q = p.add(new Vector (0,0,-3));
+                    trackprint(i, p, q);
+                }
+            }
+            gl.glEnd();
+        }
+        
+        
         public RaceTrack()
         {
-            controlPointsLTrack = new Vector[]
-            {
-                new Vector(0, 0, 0),
-                new Vector(-40, 0, 0),
-                new Vector(0, 20, 0),
-                new Vector(40, 0, 0),
-                new Vector(20, -20, 0),
-                new Vector(0, 0, 0),
-                new Vector(0, 0, 0),
-                new Vector(0, 0, 0)
-            };
+            
         }
 
         public float getShift(int trackNr)
@@ -1322,22 +1479,58 @@ public class RobotRace extends Base
                 // The O-track is selected
             } else if (1 == trackNr)
             {
-
+                double trackwidth = 6;
+                float[][] colors =
+                {
+                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                };
+                for (int i = 0; i < 4; i++)
+                {
+                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i+1);
+                }
+                
                 // The L-track is selected
             } else if (2 == trackNr)
             {
-                // code goes here ...
+                             double trackwidth = 6;
+                float[][] colors =
+                {
+                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                };
+                for (int i = 0; i < 4; i++)
+                {
+                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth,i+1);
+                }
 
-                // The C-track is selected
             } else if (3 == trackNr)
             {
-                // code goes here ...
+                double trackwidth = 6;
+                float[][] colors =
+                {
+                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                };
+                for (int i = 0; i < 4; i++)
+                {
+                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth,i+1);
+                }
+   
 
                 // The custom track is selected
             } else if (4 == trackNr)
             {
-                // code goes here ...
-
+                                double trackwidth = 6;
+                float[][] colors =
+                {
+                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                };
+                for (int i = 0; i < 4; i++)
+                {
+                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth,i+1);
+                }
             }
         }
 
