@@ -343,47 +343,82 @@ public class RobotRace extends Base
         glut.glutSolidSphere(0.1, 20, 20);
 
     }
-    
-    public void drawCube(double size, Texture texture) {
-            if (texture != null)
-            {
-                texture.bind(gl);
-            }
-            
-            gl.glBegin(GL_QUADS);
-            
-            gl.glVertex3d(-0.5, -0.5, -0.5);
-            gl.glVertex3d(0.5, -0.5, -0.5);
-            gl.glVertex3d(0.5, -0.5, 0.5);
-            gl.glVertex3d(-0.5, -0.5, 0.5);
-            
-            gl.glVertex3d(0.5, -0.5, -0.5);
-            gl.glVertex3d(0.5, 0.5, -0.5);
-            gl.glVertex3d(0.5, 0.5, 0.5);
-            gl.glVertex3d(0.5, -0.5, 0.5);
-            
-            gl.glVertex3d(0.5, 0.5, -0.5);
-            gl.glVertex3d(0.5, 0.5, 0.5);
-            gl.glVertex3d(-0.5, 0.5, 0.5);
-            gl.glVertex3d(-0.5, 0.5, -0.5);
-            
-            gl.glVertex3d(-0.5, 0.5, -0.5);
-            gl.glVertex3d(-0.5, 0.5, 0.5);
-            gl.glVertex3d(-0.5, -0.5, 0.5);
-            gl.glVertex3d(-0.5, -0.5, -0.5);
-            
-            gl.glVertex3d(-0.5, -0.5, -0.5);
-            gl.glVertex3d(0.5, -0.5, -0.5);
-            gl.glVertex3d(-0.5, 0.5, 0.5);
-            gl.glVertex3d(-0.5, 0.5, -0.5);
-            
-            gl.glVertex3d(0.5, -0.5, 0.5);
-            gl.glVertex3d(0.5, 0.5, 0.5);
-            gl.glVertex3d(-0.5, 0.5, 0.5);
-            gl.glVertex3d(-0.5, -0.5, 0.5);
-            
-            gl.glEnd();
-        }
+
+    /**
+     *
+     * @param size
+     * @param texture
+     * @param mappingCoordinates The order in which the coordinates should be
+     * specified is: right, front, left, back, bottom, top
+     */
+    public void drawCube(double size, Texture texture, QuadTexMappingCoordinates[] mappingCoordinates)
+    {
+        texture.bind(gl);
+
+        gl.glBegin(GL_QUADS);
+
+        //When looking along the X-axis, draw the right side
+        gl.glTexCoord2d(mappingCoordinates[0].p1[0], mappingCoordinates[0].p1[1]);
+        gl.glVertex3d(-0.5, -0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[0].p2[0], mappingCoordinates[0].p2[1]);
+        gl.glVertex3d(0.5, -0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[0].p3[0], mappingCoordinates[0].p3[1]);
+        gl.glVertex3d(0.5, -0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[0].p4[0], mappingCoordinates[0].p4[1]);
+        gl.glVertex3d(-0.5, -0.5, 0.5);
+
+        //When looking along the X-axis, draw the front side
+        gl.glTexCoord2d(mappingCoordinates[1].p1[0], mappingCoordinates[1].p1[1]);
+        gl.glVertex3d(0.5, -0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[1].p2[0], mappingCoordinates[1].p2[1]);
+        gl.glVertex3d(0.5, 0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[1].p3[0], mappingCoordinates[1].p3[1]);
+        gl.glVertex3d(0.5, 0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[1].p4[0], mappingCoordinates[1].p4[1]);
+        gl.glVertex3d(0.5, -0.5, 0.5);
+
+        //When looking along the X-axis, draw the left side
+        gl.glTexCoord2d(mappingCoordinates[2].p1[0], mappingCoordinates[2].p1[1]);
+        gl.glVertex3d(0.5, 0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[2].p2[0], mappingCoordinates[2].p2[1]);
+        gl.glVertex3d(-0.5, 0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[2].p3[0], mappingCoordinates[2].p3[1]);
+        gl.glVertex3d(-0.5, 0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[2].p4[0], mappingCoordinates[2].p4[1]);
+        gl.glVertex3d(0.5, 0.5, 0.5);
+
+        //When looking along the X-axis, draw the back side
+        gl.glTexCoord2d(mappingCoordinates[3].p1[0], mappingCoordinates[3].p1[1]);
+        gl.glVertex3d(-0.5, 0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[3].p2[0], mappingCoordinates[3].p2[1]);
+        gl.glVertex3d(-0.5, 0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[3].p3[0], mappingCoordinates[3].p3[1]);
+        gl.glVertex3d(-0.5, -0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[3].p4[0], mappingCoordinates[3].p4[1]);
+        gl.glVertex3d(-0.5, -0.5, -0.5);
+
+        //When looking along the X-axis, draw the bottom side
+        gl.glTexCoord2d(mappingCoordinates[4].p1[0], mappingCoordinates[4].p1[1]);
+        gl.glVertex3d(-0.5, -0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[4].p2[0], mappingCoordinates[4].p2[1]);
+        gl.glVertex3d(0.5, -0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[4].p3[0], mappingCoordinates[4].p3[1]);
+        gl.glVertex3d(0.5, 0.5, -0.5);
+        gl.glTexCoord2d(mappingCoordinates[4].p4[0], mappingCoordinates[4].p4[1]);
+        gl.glVertex3d(-0.5, 0.5, -0.5);
+
+        //When looking along the X-axis, draw the top side
+        gl.glTexCoord2d(mappingCoordinates[5].p1[0], mappingCoordinates[5].p1[1]);
+        gl.glVertex3d(0.5, -0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[5].p2[0], mappingCoordinates[5].p2[1]);
+        gl.glVertex3d(0.5, 0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[5].p3[0], mappingCoordinates[5].p3[1]);
+        gl.glVertex3d(-0.5, 0.5, 0.5);
+        gl.glTexCoord2d(mappingCoordinates[5].p4[0], mappingCoordinates[5].p4[1]);
+        gl.glVertex3d(-0.5, -0.5, 0.5);
+
+        gl.glEnd();
+    }
 
     /**
      * Materials that can be used for the robots.
@@ -708,7 +743,24 @@ public class RobotRace extends Base
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.65);
                 gl.glScaled(3.4, 3.4, 5.5);
-                drawCube(1, null);
+
+                // <editor-fold defaultstate="collapsed" desc="Texture Coordinates">
+                QuadTexMappingCoordinates[] mappingCoords = new QuadTexMappingCoordinates[6];
+                //Right side:
+                mappingCoords[0] = new QuadTexMappingCoordinates(0, 0.6640625, 0.6640625,0.6640625, 0.6640625, 0, 0, 0);
+                //Front side:
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Left side:
+                mappingCoords[2] = new QuadTexMappingCoordinates(0.6640625, 0.6640625, 0,0.6640625, 0, 0, 0.6640625, 0);
+                //Back side:
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Bottom side:
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Top side:
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                // </editor-fold>
+                
+                drawCube(1, torso, mappingCoords);
                 gl.glPopMatrix();
 
                 //Draw the front block
@@ -1258,195 +1310,257 @@ public class RobotRace extends Base
         /**
          * Array with control points for the O-track.
          */
-        private Vector[][] controlPointsOTrack  = {    { new Vector (-40,0,0), new Vector(40,0,0), new Vector(-40,40,0),new Vector(40,40,0)},
-                                                       { new Vector(40,0,0), new Vector(-40,0,0), new Vector(40,-40,0), new Vector(-40,-40,0)},
-                                                       { new Vector(-40,-3,0), new Vector(-40,3,0), new Vector(0,0,0), new Vector(0,0,0)}
-                                                    };
-        private int[] BuildOTrack = {2,2,0};
+        private Vector[][] controlPointsOTrack =
+        {
+            {
+                new Vector(-40, 0, 0), new Vector(40, 0, 0), new Vector(-40, 40, 0), new Vector(40, 40, 0)
+            },
+            {
+                new Vector(40, 0, 0), new Vector(-40, 0, 0), new Vector(40, -40, 0), new Vector(-40, -40, 0)
+            },
+            {
+                new Vector(-40, -3, 0), new Vector(-40, 3, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            }
+        };
+        private int[] BuildOTrack =
+        {
+            2, 2, 0
+        };
         /**
          * Array with control points for the L-track.
          */
-        private Vector[][] controlPointsLTrack = {  { new Vector(0,-75,0), new Vector(60,-75,0), new Vector(0,0,0),new Vector(0,0,0)},
-                                                    { new Vector(60,-75,0), new Vector(60,-15,0), new Vector(90,-75,0), new Vector(90,-15,0)},
-                                                    { new Vector(60,-15,0), new Vector(45,-15,0), new Vector(0,0,0), new Vector(0,0,0)},
-                                                    { new Vector(45,-15,0), new Vector(30,0,0), new Vector(35,-15,0), new Vector(0,0,0)},
-                                                    { new Vector(30,0,0), new Vector(30,90,0), new Vector(0,0,0), new Vector(0,0,0)},
-                                                    { new Vector(30,90,0), new Vector(-30,90,0), new Vector(30,120,0), new Vector(-30,120,0)},
-                                                    { new Vector(-30,90,0), new Vector(-30,-15,0), new Vector(0,0,0), new Vector(0,0,0)},
-                                                    { new Vector(-30,-15,0), new Vector(0,-75,0), new Vector(-30,-75,0), new Vector(0,0,0)},
-                                                    { new Vector(-2,-75,0), new Vector(2,-75,0), new Vector(0,0,0), new Vector(0,0,0)},                                            
-                                                    };
-        private int[] BuildLTrack = {0,2,0,1,0,2,0,1,0};
+        private Vector[][] controlPointsLTrack =
+        {
+            {
+                new Vector(0, -75, 0), new Vector(60, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(60, -75, 0), new Vector(60, -15, 0), new Vector(90, -75, 0), new Vector(90, -15, 0)
+            },
+            {
+                new Vector(60, -15, 0), new Vector(45, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(45, -15, 0), new Vector(30, 0, 0), new Vector(35, -15, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(30, 0, 0), new Vector(30, 90, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(30, 90, 0), new Vector(-30, 90, 0), new Vector(30, 120, 0), new Vector(-30, 120, 0)
+            },
+            {
+                new Vector(-30, 90, 0), new Vector(-30, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(-30, -15, 0), new Vector(0, -75, 0), new Vector(-30, -75, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(-2, -75, 0), new Vector(2, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+        };
+        private int[] BuildLTrack =
+        {
+            0, 2, 0, 1, 0, 2, 0, 1, 0
+        };
         /**
          * Array with control points for the C-track.
          */
-        private Vector[][] controlPointsCTrack = {  { new Vector (30,45,0), new Vector(30,75,0), new Vector(45,45,0),new Vector(45,75,0)},
-                                                    { new Vector(30,75,0), new Vector(30,-75,0), new Vector(-60,75,0), new Vector(-60,-75,0)},
-                                                    { new Vector(30,-75,0), new Vector(30,-45,0), new Vector(45,-75,0), new Vector(45,-45,0)},
-                                                    { new Vector(30,-45,0), new Vector(30,45,0), new Vector(-15,-45,0), new Vector(-15,45,0)},
-                                                    { new Vector(28,45,0), new Vector(32,45,0), new Vector(0,0,0), new Vector(0,0,0)}
-                                                };
-        private int[] BuildCTrack = {2,2,2,2,0};
+        private Vector[][] controlPointsCTrack =
+        {
+            {
+                new Vector(30, 45, 0), new Vector(30, 75, 0), new Vector(45, 45, 0), new Vector(45, 75, 0)
+            },
+            {
+                new Vector(30, 75, 0), new Vector(30, -75, 0), new Vector(-60, 75, 0), new Vector(-60, -75, 0)
+            },
+            {
+                new Vector(30, -75, 0), new Vector(30, -45, 0), new Vector(45, -75, 0), new Vector(45, -45, 0)
+            },
+            {
+                new Vector(30, -45, 0), new Vector(30, 45, 0), new Vector(-15, -45, 0), new Vector(-15, 45, 0)
+            },
+            {
+                new Vector(28, 45, 0), new Vector(32, 45, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            }
+        };
+        private int[] BuildCTrack =
+        {
+            2, 2, 2, 2, 0
+        };
         /**
          * Array with control points for the custom track.
          */
-        private Vector[][] controlPointsCustomTrack = { { new Vector (1,0,0), new Vector(10,0,0), new Vector(0,0,0),new Vector(0,0,0)},
-                                                        { new Vector(10,0,0), new Vector(20,0,0), new Vector(0,0,0), new Vector(0,0,0)},
-                                                        { new Vector(20,0,0), new Vector(30,0,0), new Vector(0,0,0), new Vector(0,0,0)}
-                                 };
-        private int[] BuildCustomTrack = {0,0,0};
+        private Vector[][] controlPointsCustomTrack =
+        {
+            {
+                new Vector(1, 0, 0), new Vector(10, 0, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(10, 0, 0), new Vector(20, 0, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            },
+            {
+                new Vector(20, 0, 0), new Vector(30, 0, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+            }
+        };
+        private int[] BuildCustomTrack =
+        {
+            0, 0, 0
+        };
+
         /**
          * Constructs the race track, sets up display lists.
          */
-        public Vector []findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment)
+        public Vector[] findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment)
         {
-            Vector l1,l2;
+            Vector l1, l2;
             if (Buildtype[j] == 0)
-                        {
-                            l1 = straight(Points[j][0], Points[j][1], step);
-                            l2 = straight(Points[j][0], Points[j][1], step+segment);
-                         
-                        }
-                    else if (Buildtype[j] == 1)
-                        {
-                            l1 = bent_90(Points[j][0], Points[j][1], Points[j][2], step);
-                            l2 = bent_90(Points[j][0], Points[j][1], Points[j][2], step+segment);
-                        }
-                    else if (Buildtype[j] == 2)
-                        {
-                            l1 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3],step);
-                            l2 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3],step+segment);                         
-                        }
-                    else
-                    {
-                        l1 = Vector.O;
-                        l2 = Vector.O;
-                        System.out.println("Invallid Buildtype! made l1 == l2 == {0,0,0}" +" "+Buildtype[j]);
-                        
-                    }
-            Vector [] back = {l1,l2};
+            {
+                l1 = straight(Points[j][0], Points[j][1], step);
+                l2 = straight(Points[j][0], Points[j][1], step + segment);
+
+            } else if (Buildtype[j] == 1)
+            {
+                l1 = bent_90(Points[j][0], Points[j][1], Points[j][2], step);
+                l2 = bent_90(Points[j][0], Points[j][1], Points[j][2], step + segment);
+            } else if (Buildtype[j] == 2)
+            {
+                l1 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3], step);
+                l2 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3], step + segment);
+            } else
+            {
+                l1 = Vector.O;
+                l2 = Vector.O;
+                System.out.println("Invallid Buildtype! made l1 == l2 == {0,0,0}" + " " + Buildtype[j]);
+
+            }
+            Vector[] back =
+            {
+                l1, l2
+            };
             return back;
         }
-        
-        public void trackprint(int i,Vector p, Vector q)
+
+        public void trackprint(int i, Vector p, Vector q)
         {
             int textureX = 0;
-                    int textureY = 0;
-                    if (i % 2 != 0)
-                    {
-                        textureX = 1;
-                        textureY = 0;
-                    }
-                    gl.glTexCoord2d(textureX, textureY);
-                    gl.glVertex3d(p.x(), p.y(), p.z());
-                    if (i % 2 == 0)
-                    {
-                        textureX = 0;
-                        textureY = 1;
-                    } else
-                    {
-                        textureX = 1;
-                        textureY = 1;
-                    }
-                    gl.glTexCoord2d(textureX, textureY);
-                    gl.glVertex3d(q.x(), q.y(), q.z());
+            int textureY = 0;
+            if (i % 2 != 0)
+            {
+                textureX = 1;
+                textureY = 0;
+            }
+            gl.glTexCoord2d(textureX, textureY);
+            gl.glVertex3d(p.x(), p.y(), p.z());
+            if (i % 2 == 0)
+            {
+                textureX = 0;
+                textureY = 1;
+            } else
+            {
+                textureX = 1;
+                textureY = 1;
+            }
+            gl.glTexCoord2d(textureX, textureY);
+            gl.glVertex3d(q.x(), q.y(), q.z());
         }
-        public Vector straight(Vector A,Vector B, Double t)
+
+        public Vector straight(Vector A, Vector B, Double t)
         {
-            Vector point = A.scale(1-t).add(B.scale(t));
+            Vector point = A.scale(1 - t).add(B.scale(t));
             return point;
         }
-        
-        public Vector bent_90(Vector A, Vector B, Vector C,double t)
+
+        public Vector bent_90(Vector A, Vector B, Vector C, double t)
         {
-            Vector point = A.scale(Math.pow((1-t), 2)).add(C.scale(2*(1-t)*t)).add(B.scale(Math.pow(t, 2)));
+            Vector point = A.scale(Math.pow((1 - t), 2)).add(C.scale(2 * (1 - t) * t)).add(B.scale(Math.pow(t, 2)));
             return point;
         }
-        
+
         public Vector bent_180(Vector A, Vector B, Vector C, Vector D, double t)
         {
-            
-            Vector point = A.scale(Math.pow(1-t,3)).add(C.scale(3*Math.pow((1-t),2)*t)).add(D.scale(3*(1-t)*Math.pow(t,2))).add(B.scale(Math.pow(t,3)));
+
+            Vector point = A.scale(Math.pow(1 - t, 3)).add(C.scale(3 * Math.pow((1 - t), 2) * t)).add(D.scale(3 * (1 - t) * Math.pow(t, 2))).add(B.scale(Math.pow(t, 3)));
             return point;
         }
-        public void TrackConstructor(Vector [] [] Points, int Buildtype[], Double trackwidth, int pos)
+
+        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos)
         {
-        // draw part of top side of the track
+            // draw part of top side of the track
             track.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             int times = Buildtype.length;
-            for (int j=0;j<times;j++)
+            for (int j = 0; j < times; j++)
             {
                 double stappen = 100;
-                double segment = 1/stappen;
-                for (int i = 0; i <stappen; i++)
+                double segment = 1 / stappen;
+                for (int i = 0; i < stappen; i++)
                 {
-                    double step = segment *i;                  
-                    Vector []beginandend = findpoint(Buildtype, Points, j, step, segment);
+                    double step = segment * i;
+                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-                    
+
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y()/s*trackwidth*(3-pos),ll.x()/s*trackwidth*(3-pos),0)).add(l1);
-                    Vector q = (new Vector(-ll.y()/s*trackwidth*(2-pos),ll.x()/s*trackwidth*(2-pos),0)).add(l2);
-                    
+                    Vector p = (new Vector(-ll.y() / s * trackwidth * (3 - pos), ll.x() / s * trackwidth * (3 - pos), 0)).add(l1);
+                    Vector q = (new Vector(-ll.y() / s * trackwidth * (2 - pos), ll.x() / s * trackwidth * (2 - pos), 0)).add(l2);
+
                     trackprint(i, p, q);
                 }
             }
             gl.glEnd();
-            
-        // Draw the inside of the track
+
+            // Draw the inside of the track
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
-            for (int j=0;j<times;j++)
+            for (int j = 0; j < times; j++)
             {
                 double stappen = 100;
-                double segment = 1/stappen;
-                for (int i = 0; i <stappen; i++)
-                {      
-                    double step = segment *i;
-                    Vector []beginandend = findpoint(Buildtype, Points, j, step, segment);
+                double segment = 1 / stappen;
+                for (int i = 0; i < stappen; i++)
+                {
+                    double step = segment * i;
+                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-                    
+
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y()/s*trackwidth*2,ll.x()/s*trackwidth*2,0)).add(l1);
-                    Vector q = p.add(new Vector (0,0,-3));
+                    Vector p = (new Vector(-ll.y() / s * trackwidth * 2, ll.x() / s * trackwidth * 2, 0)).add(l1);
+                    Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
             }
             gl.glEnd();
-            
+
             // Draw the uitside of the track
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
-            for (int j=0;j<times;j++)
+            for (int j = 0; j < times; j++)
             {
                 double stappen = 100;
-                double segment = 1/stappen;
-                for (int i = 0; i <stappen; i++)
-                {      
-                    double step = segment *i;
-                    Vector []beginandend = findpoint(Buildtype, Points, j, step, segment);
+                double segment = 1 / stappen;
+                for (int i = 0; i < stappen; i++)
+                {
+                    double step = segment * i;
+                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-                    
+
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(ll.y()/s*trackwidth*2,-ll.x()/s*trackwidth*2,0)).add(l1);
-                    Vector q = p.add(new Vector (0,0,-3));
+                    Vector p = (new Vector(ll.y() / s * trackwidth * 2, -ll.x() / s * trackwidth * 2, 0)).add(l1);
+                    Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
             }
             gl.glEnd();
         }
-        
-        
+
         public RaceTrack()
         {
-            
+
         }
 
         public float getShift(int trackNr)
@@ -1487,13 +1601,13 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i+1);
+                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1);
                 }
-                
+
                 // The L-track is selected
             } else if (2 == trackNr)
             {
-                             double trackwidth = 6;
+                double trackwidth = 6;
                 float[][] colors =
                 {
                     Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
@@ -1501,7 +1615,7 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth,i+1);
+                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1);
                 }
 
             } else if (3 == trackNr)
@@ -1514,14 +1628,13 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth,i+1);
+                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1);
                 }
-   
 
                 // The custom track is selected
             } else if (4 == trackNr)
             {
-                                double trackwidth = 6;
+                double trackwidth = 6;
                 float[][] colors =
                 {
                     Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
@@ -1529,7 +1642,7 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth,i+1);
+                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1);
                 }
             }
         }
@@ -1539,7 +1652,7 @@ public class RobotRace extends Base
             track.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             double segmentLength = (2 * Math.PI) / segments;
-            
+
             //Draw the top of the track
             for (int i = 0; i < segments + 1; i++)
             {
@@ -1574,7 +1687,7 @@ public class RobotRace extends Base
                 gl.glVertex3d(q.x(), q.y(), q.z());
             }
             gl.glEnd();
-            
+
             //Draw the side of the track (inside)
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
@@ -1583,7 +1696,7 @@ public class RobotRace extends Base
                 double alpha = segmentLength * i;
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(0, 0, -3));
-                
+
                 int textureX = 0;
                 int textureY = 0;
 
@@ -1610,7 +1723,7 @@ public class RobotRace extends Base
                 gl.glVertex3d(q.x(), q.y(), q.z());
             }
             gl.glEnd();
-            
+
             //Draw the side of the track (outside)
             gl.glBegin(GL_QUAD_STRIP);
             for (int i = 0; i < segments + 1; i++)
@@ -1619,7 +1732,7 @@ public class RobotRace extends Base
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 p = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
                 Vector q = p.add(new Vector(0, 0, -3));
-                
+
                 int textureX = 0;
                 int textureY = 0;
 
@@ -1715,7 +1828,7 @@ public class RobotRace extends Base
         {
             return 0; // <- code goes here
         }
- 
+
     }
 
     /**
