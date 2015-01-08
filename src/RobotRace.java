@@ -1,4 +1,3 @@
-
 import com.jogamp.opengl.util.texture.Texture;
 import java.util.Random;
 import static javax.media.opengl.GL2.*;
@@ -738,17 +737,17 @@ public class RobotRace extends Base
                 // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the middle cube">
                 QuadTexMappingCoordinates[] mappingCoords = new QuadTexMappingCoordinates[6];
                 //Right side:
-                mappingCoords[0] = new QuadTexMappingCoordinates(0, 0.6640625, 0.6640625,0.6640625, 0.6640625, 0, 0, 0);
+                mappingCoords[0] = new QuadTexMappingCoordinates(0, 0.335975, 0.6640625, 0.335975, 0.6640625, 1, 0, 1);
                 //Front side:
-                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Left side:
-                mappingCoords[2] = new QuadTexMappingCoordinates(0.6640625, 0.6640625, 0,0.6640625, 0, 0, 0.6640625, 0);
+                mappingCoords[2] = new QuadTexMappingCoordinates(0.6640625, 0.335975, 0, 0.335975, 0, 1, 0.6640625, 1);
                 //Back side:
-                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Bottom side:
-                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Top side:
-                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 // </editor-fold>
                 drawCube(torso, mappingCoords);
                 gl.glPopMatrix();
@@ -760,17 +759,17 @@ public class RobotRace extends Base
                 // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the front cube">
                 mappingCoords = new QuadTexMappingCoordinates[6];
                 //Right side:
-                mappingCoords[0] = new QuadTexMappingCoordinates(0.6640625, 0.6640625, 1 ,0.6640625, 1, 0, 0.6640625, 0);
+                mappingCoords[0] = new QuadTexMappingCoordinates(0.6640625, 0.335975, 1, 0.335975, 1, 1, 0.6640625, 1);
                 //Front side:
-                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Left side:
-                mappingCoords[2] = new QuadTexMappingCoordinates(1, 0.6640625, 0.6640625 ,0.6640625, 0.6640625, 0, 1, 0);
+                mappingCoords[2] = new QuadTexMappingCoordinates(1, 0.335975, 0.6640625, 0.335975, 0.6640625, 1, 1, 1);
                 //Back side:
-                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Bottom side:
-                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Top side:
-                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 // </editor-fold>                
                 drawCube(torso, mappingCoords);
                 gl.glPopMatrix();
@@ -782,17 +781,17 @@ public class RobotRace extends Base
                 // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the rear cube">
                 mappingCoords = new QuadTexMappingCoordinates[6];
                 //Right side:
-                mappingCoords[0] = new QuadTexMappingCoordinates(1, 0.6640625, 0.6640625 ,0.6640625, 0.6640625, 0, 1, 0);
+                mappingCoords[0] = new QuadTexMappingCoordinates(1, 0.335975, 0.6640625, 0.335975, 0.6640625, 1, 1, 1);
                 //Front side:
-                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Left side:
-                mappingCoords[2] = new QuadTexMappingCoordinates(0.6640625, 0.6640625, 1 ,0.6640625, 1, 0, 0.6640625, 0);
+                mappingCoords[2] = new QuadTexMappingCoordinates(0.6640625, 0.335975, 1, 0.335975, 1, 1, 0.6640625, 1);
                 //Back side:
-                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Bottom side:
-                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 //Top side:
-                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.335975, 0, 0.335975);
                 // </editor-fold>   
                 drawCube(torso, mappingCoords);
                 gl.glPopMatrix();
@@ -1005,11 +1004,26 @@ public class RobotRace extends Base
             @Override
             public void drawSolid()
             {
-                //Draw the neck
+                //Draw the head
                 gl.glPushMatrix();
                 gl.glTranslated(1.7, 0, 0);
                 gl.glScaled(3.4, 2.1, 2.2);
-                glut.glutSolidCube(1);
+                // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the middle cube">
+                QuadTexMappingCoordinates[] mappingCoords = new QuadTexMappingCoordinates[6];
+                //Right side:
+                mappingCoords[0] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.421875, 0, 0.421875);
+                //Front side:
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.421875, 1, 0.421875, 1, 1, 0, 1);
+                //Left side:
+                mappingCoords[2] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.421875, 0, 0.421875);
+                //Back side:
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.421875, 0, 0.421875);
+                //Bottom side:
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.421875, 0, 0.421875);
+                //Top side:
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0, 1, 0, 1, 0.421875, 0, 0.421875);
+                // </editor-fold>
+                drawCube(head, mappingCoords);
                 gl.glPopMatrix();
 
                 //Draw the guns
@@ -1019,7 +1033,6 @@ public class RobotRace extends Base
                 glut.glutSolidCylinder(0.15, 4.3, 6, 1);
                 gl.glPopMatrix();
 
-                //Draw the guns
                 gl.glPushMatrix();
                 gl.glTranslated(0, -0.7, -1.2);
                 gl.glRotated(90, 0, 1, 0);
@@ -1207,7 +1220,6 @@ public class RobotRace extends Base
          */
         private void setDefaultMode()
         {
-
             Vector centerPoint = new Vector(0, 0, 0);
 
             //Get coordinate values for camera
