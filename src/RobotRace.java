@@ -1,10 +1,6 @@
 
 import com.jogamp.opengl.util.texture.Texture;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import static javax.media.opengl.GL.GL_LINES;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.GL2GL3.GL_QUADS;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -13,7 +9,6 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT1;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
-import jogamp.opengl.glu.mipmap.BuildMipmap;
 import robotrace.Base;
 import robotrace.Vector;
 
@@ -50,8 +45,6 @@ import robotrace.Vector;
  */
 public class RobotRace extends Base
 {
-
-    private float rotation;
 
     /**
      * Array of the four robots.
@@ -1086,14 +1079,14 @@ public class RobotRace extends Base
 
             this.rand = rand;
 
-            this.speed = 8 + rand.nextDouble() * 2;
+            this.speed = 20 + rand.nextDouble() * 2;
             // code goes here ...
         }
 
         public void move(Vector offset)
         {
             this.position = startPosition.add(offset);
-            this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 100);
+            this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 200);
         }
 
         public void rotate(double[] rotationXYZ)
