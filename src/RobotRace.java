@@ -1346,6 +1346,10 @@ public class RobotRace extends Base
         /**
          * Array with control points for the O-track.
          */
+        private int trackpartcount=0;
+        private double tracktime = 0;
+        
+        private double [] trackparttimeO = new double[2];
         private double [] trackpartdistanceO = new double[2];
         private Vector[][] controlPointsOTrack = 
         {
@@ -1366,6 +1370,7 @@ public class RobotRace extends Base
         /**
          * Array with control points for the L-track.
          */
+        private double [] trackparttimeL = new double[8];
         private double [] trackpartdistanceL = new double[8];
         private Vector[][] controlPointsLTrack =
         {
@@ -1404,6 +1409,7 @@ public class RobotRace extends Base
         /**
          * Array with control points for the C-track.
          */
+        private double [] trackparttimeC = new double[4];
         private double [] trackpartdistanceC = new double[4];
         private Vector[][] controlPointsCTrack =
         {
@@ -1430,6 +1436,7 @@ public class RobotRace extends Base
         /**
          * Array with control points for the custom track.
          */
+        private double [] trackparttimeCustom = new double[3];
         private double [] trackpartdistanceCustom = new double[3];
         private Vector[][] controlPointsCustomTrack =
         {
@@ -1871,6 +1878,7 @@ public class RobotRace extends Base
          */
         public Vector getPoint(int trackNr, double t, double shift, double trackwidth)
         {
+            int pos = (int) shift/6;
             Vector position;
             switch (trackNr)
             {
@@ -1879,6 +1887,34 @@ public class RobotRace extends Base
                     //System.out.println(t);
                     return position; // <- code goes here
                 case 1: // O track
+                    switch (trackpartcount)
+                    {
+                        case 0:
+                        {
+                            tracktime = gs.tAnim;
+                            break;
+                        }
+                        case 1:
+                        {
+                            break;
+                        }
+                        default:
+                        {
+                            trackpartcount = 0;
+                            break;
+                        }
+                    }
+                    
+                    if (tracktime < 1)
+                    {
+                        trackpartcount+=1;
+                    }
+                    if (trackpartcount > 2)
+                    {
+                        trackpartcount = 0;
+                    }
+                    
+                    position =robotpos(controlPointsOTrack, BuildOTrack, trackpartcount, trackwidth,pos , tracktime);
                     
                     break;
                 case 2: // L track
