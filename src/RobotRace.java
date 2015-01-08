@@ -1,10 +1,6 @@
 
 import com.jogamp.opengl.util.texture.Texture;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import static javax.media.opengl.GL.GL_LINES;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.GL2GL3.GL_QUADS;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -13,7 +9,6 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT1;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
-import jogamp.opengl.glu.mipmap.BuildMipmap;
 import robotrace.Base;
 import robotrace.Vector;
 
@@ -50,8 +45,6 @@ import robotrace.Vector;
  */
 public class RobotRace extends Base
 {
-
-    private float rotation;
 
     /**
      * Array of the four robots.
@@ -345,13 +338,12 @@ public class RobotRace extends Base
     }
 
     /**
-     *
-     * @param size
+     * Draws a cube consisting of 6 quads with size 1x1, the origin is in the exact center of the cube
      * @param texture
      * @param mappingCoordinates The order in which the coordinates should be
      * specified is: right, front, left, back, bottom, top
      */
-    public void drawCube(double size, Texture texture, QuadTexMappingCoordinates[] mappingCoordinates)
+    public void drawCube(Texture texture, QuadTexMappingCoordinates[] mappingCoordinates)
     {
         texture.bind(gl);
 
@@ -359,7 +351,7 @@ public class RobotRace extends Base
 
         //When looking along the X-axis, draw the right side
         gl.glTexCoord2d(mappingCoordinates[0].p1[0], mappingCoordinates[0].p1[1]);
-        gl.glVertex3d(-0.5, -0.5, -0.5);
+        gl.glVertex3d(-0.5 , -0.5, -0.5);
         gl.glTexCoord2d(mappingCoordinates[0].p2[0], mappingCoordinates[0].p2[1]);
         gl.glVertex3d(0.5, -0.5, -0.5);
         gl.glTexCoord2d(mappingCoordinates[0].p3[0], mappingCoordinates[0].p3[1]);
@@ -743,8 +735,7 @@ public class RobotRace extends Base
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.65);
                 gl.glScaled(3.4, 3.4, 5.5);
-
-                // <editor-fold defaultstate="collapsed" desc="Texture Coordinates">
+                // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the middle cube">
                 QuadTexMappingCoordinates[] mappingCoords = new QuadTexMappingCoordinates[6];
                 //Right side:
                 mappingCoords[0] = new QuadTexMappingCoordinates(0, 0.6640625, 0.6640625,0.6640625, 0.6640625, 0, 0, 0);
@@ -759,22 +750,51 @@ public class RobotRace extends Base
                 //Top side:
                 mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
                 // </editor-fold>
-                
-                drawCube(1, torso, mappingCoords);
+                drawCube(torso, mappingCoords);
                 gl.glPopMatrix();
 
                 //Draw the front block
                 gl.glPushMatrix();
                 gl.glTranslated(2.75, 0, -0.4);
                 gl.glScaled(2.1, 2.1, 3.4);
-                glut.glutSolidCube(1);
+                // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the front cube">
+                mappingCoords = new QuadTexMappingCoordinates[6];
+                //Right side:
+                mappingCoords[0] = new QuadTexMappingCoordinates(0.6640625, 0.6640625, 1 ,0.6640625, 1, 0, 0.6640625, 0);
+                //Front side:
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Left side:
+                mappingCoords[2] = new QuadTexMappingCoordinates(1, 0.6640625, 0.6640625 ,0.6640625, 0.6640625, 0, 1, 0);
+                //Back side:
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Bottom side:
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Top side:
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                // </editor-fold>                
+                drawCube(torso, mappingCoords);
                 gl.glPopMatrix();
 
                 //Draw the rear block
                 gl.glPushMatrix();
                 gl.glTranslated(-2.75, 0, -0.4);
                 gl.glScaled(2.1, 2.1, 3.4);
-                glut.glutSolidCube(1);
+                // <editor-fold defaultstate="collapsed" desc="Texture Coordinates For the rear cube">
+                mappingCoords = new QuadTexMappingCoordinates[6];
+                //Right side:
+                mappingCoords[0] = new QuadTexMappingCoordinates(1, 0.6640625, 0.6640625 ,0.6640625, 0.6640625, 0, 1, 0);
+                //Front side:
+                mappingCoords[1] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Left side:
+                mappingCoords[2] = new QuadTexMappingCoordinates(0.6640625, 0.6640625, 1 ,0.6640625, 1, 0, 0.6640625, 0);
+                //Back side:
+                mappingCoords[3] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Bottom side:
+                mappingCoords[4] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                //Top side:
+                mappingCoords[5] = new QuadTexMappingCoordinates(0, 0.6640625, 0, 1, 1, 1, 1, 0.6640625);
+                // </editor-fold>   
+                drawCube(torso, mappingCoords);
                 gl.glPopMatrix();
 
                 //Draw the neck
@@ -1060,14 +1080,14 @@ public class RobotRace extends Base
 
             this.rand = rand;
 
-            this.speed = 8 + rand.nextDouble() * 2;
+            this.speed = 20 + rand.nextDouble() * 2;
             // code goes here ...
         }
         
         public void move(Vector offset)
         {
             this.position = startPosition.add(offset);
-            this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 100);
+            this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 200);
         }
 
         public void rotate(double[] rotationXYZ)
