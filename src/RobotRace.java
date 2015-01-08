@@ -1053,6 +1053,7 @@ public class RobotRace extends Base
             this.startPosition = startPosition;
             this.position = startPosition;
             this.distanceTraversed = 0;
+            
 
             //Use a torso as the root limb
             rootLimb = new Torso(this);
@@ -1062,7 +1063,7 @@ public class RobotRace extends Base
             this.speed = 8 + rand.nextDouble() * 2;
             // code goes here ...
         }
-
+        
         public void move(Vector offset)
         {
             this.position = startPosition.add(offset);
@@ -1310,6 +1311,7 @@ public class RobotRace extends Base
         /**
          * Array with control points for the O-track.
          */
+        private double [] trackpartdistance ;
         private Vector[][] controlPointsOTrack =
         {
             {
@@ -1484,7 +1486,7 @@ public class RobotRace extends Base
             return point;
         }
 
-        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos)
+        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int tracknr)
         {
             // draw part of top side of the track
             track.bind(gl);
@@ -1492,19 +1494,19 @@ public class RobotRace extends Base
             int times = Buildtype.length;
             for (int j = 0; j < times; j++)
             {
-                double stappen = 100;
-                double segment = 1 / stappen;
-                for (int i = 0; i < stappen; i++)
+                double steps = 100;
+                double segment = 1 / steps;
+                for (int i = 0; i < steps; i++)
                 {
                     double step = segment * i;
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-
+                    
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth * (3 - pos), ll.x() / s * trackwidth * (3 - pos), 0)).add(l1);
-                    Vector q = (new Vector(-ll.y() / s * trackwidth * (2 - pos), ll.x() / s * trackwidth * (2 - pos), 0)).add(l2);
+                    Vector p = (new Vector(-ll.y() / s * trackwidth * (3 - tracknr), ll.x() / s * trackwidth * (3 - tracknr), 0)).add(l1);
+                    Vector q = (new Vector(-ll.y() / s * trackwidth * (2 - tracknr), ll.x() / s * trackwidth * (2 - tracknr), 0)).add(l2);
 
                     trackprint(i, p, q);
                 }
@@ -1547,8 +1549,8 @@ public class RobotRace extends Base
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-
                     Vector ll = l2.subtract(l1);
+                    trackpartdistance[j] = trackpartdistance[j] +ll.length(); // MAKE SURE THIS VALUE IS RESET WHEN ANOTHER TRACK IS CHOOSEN!!!!
                     Double s = ll.length();
                     Vector p = (new Vector(ll.y() / s * trackwidth * 2, -ll.x() / s * trackwidth * 2, 0)).add(l1);
                     Vector q = p.add(new Vector(0, 0, -3));
@@ -1556,6 +1558,32 @@ public class RobotRace extends Base
                 }
             }
             gl.glEnd();
+        }
+        public Vector robotpath(Vector [][] Points, int Buildtype[], double trackwidth, int tracknr, double t)
+        {
+            int L = Buildtype.length;
+            for (int j = 0; j<L;j++)
+            {
+                
+            }
+            return  Vector.O;
+        }
+        
+        public Vector robotpos(Vector[][] Points, int Buildtype[], int j, double trackwidth, int tracknr, double time)
+        {
+            //time has to go from 0 to 1 do time =((clock-tstart)*velocity)/distancepart
+            // distance part is trackpartdistance which is an array
+            //int L = Buildtype.length;
+            //double tpos = time/trackpartdistance[j];
+            
+            Vector[] beginandend = findpoint(Buildtype, Points, j, time, 0.01)  ;
+            Vector L1 = beginandend[0];
+            Vector L2 = beginandend[1];
+
+            Vector LL = L2.subtract(L1);
+            Double s = LL.length();
+            Vector p = (new Vector(-LL.y() / s * trackwidth * (3 - tracknr+0.5*trackwidth), LL.x() / s * trackwidth * (3 - tracknr+0.5*trackwidth), 0)).add(L1);
+            return p;
         }
 
         public RaceTrack()
