@@ -240,12 +240,12 @@ public class RobotRace extends Base
             drawAxisFrame();
         }
         
-       
-        
         // Draw the robots
         for (int i = 0; i < robots.length; i++)
         {
             Robot r = robots[i];
+            
+            r.walkAnim(gs.tAnim);
 
             double distance = (lap / r.speed % 1);
             r.distanceTraversed += distance;
@@ -1104,6 +1104,28 @@ public class RobotRace extends Base
         {
             this.position = startPosition.add(offset);
             this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 200);
+        }
+        
+        public void walkAnim(double t)
+        {
+            //The animation cycle or each leg has a startingpoint that is
+            //0.25 t higher than the previous leg        
+            animateLeg(t, ((Torso)rootLimb).foreLegLeft);
+            animateLeg(t+0.25, ((Torso)rootLimb).hindLegRight);
+            animateLeg(t+0.5, ((Torso)rootLimb).foreLegRight);
+            animateLeg(t+0.75, ((Torso)rootLimb).hindLegLeft);
+        }
+        
+        public void animateLeg(double t, UpperLeg leg)
+        {
+            double maxAngle = 45;
+            double period = 5;
+            double sine = Math.sin((1/period)*2*Math.PI * t);
+            System.out.println(sine);
+            
+            double newAngle = maxAngle*sine;
+            double rotationXYZ[] = {0,newAngle,0};
+            leg.rotationXYZ = rotationXYZ;
         }
 
         public void rotate(double[] rotationXYZ)
