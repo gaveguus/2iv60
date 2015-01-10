@@ -1108,24 +1108,35 @@ public class RobotRace extends Base
         
         public void walkAnim(double t)
         {
+            t *= speed/8;
+            
             //The animation cycle or each leg has a startingpoint that is
             //0.25 t higher than the previous leg        
             animateLeg(t, ((Torso)rootLimb).foreLegLeft);
-            animateLeg(t+0.25, ((Torso)rootLimb).hindLegRight);
-            animateLeg(t+0.5, ((Torso)rootLimb).foreLegRight);
-            animateLeg(t+0.75, ((Torso)rootLimb).hindLegLeft);
+            animateLeg(t+0.4, ((Torso)rootLimb).hindLegRight);
+            animateLeg(t+0.8, ((Torso)rootLimb).foreLegRight);
+            animateLeg(t+1.2, ((Torso)rootLimb).hindLegLeft);
         }
         
         public void animateLeg(double t, UpperLeg leg)
         {
-            double maxAngle = 45;
+            double maxAngle = 35;
             double period = 5;
             double sine = Math.sin((1/period)*2*Math.PI * t);
             System.out.println(sine);
             
             double newAngle = maxAngle*sine;
-            double rotationXYZ[] = {0,newAngle,0};
-            leg.rotationXYZ = rotationXYZ;
+            leg.rotationXYZ = new double[]{0,newAngle,0};
+            
+            if (newAngle < 0)
+            {
+                leg.lowerLeg.rotationXYZ = new double[]{0, -newAngle,0};
+            }
+            else
+            {
+                leg.lowerLeg.rotationXYZ = new double[]{0, 0.5*newAngle,0};
+            }
+
         }
 
         public void rotate(double[] rotationXYZ)
