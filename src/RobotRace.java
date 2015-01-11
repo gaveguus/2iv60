@@ -2023,23 +2023,34 @@ public class RobotRace extends Base
          */
         public void draw()
         {
+            //The number of segments of the terrain
             int segmentsX = 40;
             int segmentsY = 40;
+            
+            //dimensions of the terrain
             float widthX = 400f;
             float widthY = 400f;
+            
+            //dimensions of a segment
             float dx = widthX / segmentsX;
             float dy = widthY / segmentsY;
 
+            //Factor used to determine how much 'mountains' the terrain contains
             float periodX = widthX / 10;
             float periodY = widthY / 10;
 
+            //Height multiplier of the terrain
             float amplitude = 20;
+            
+            //Distance the complete terrain (except the water) is shifted down
             float shift = 0; //Not used right now
 
             gl.glPushMatrix();
 
+            //Make sure the track is a bit elevated above the terrain
             gl.glTranslated(-widthX / 2, -widthY / 2, -5);
 
+            //The colors to use in the height map
             Buffer lineTexArray = ByteBuffer.wrap(new byte[]
             {
                 0, 0, (byte) 255,
@@ -2048,6 +2059,7 @@ public class RobotRace extends Base
                 (byte) 145, (byte) 75, 0
 
             });
+            gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             gl.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, lineTexArray);
             gl.glBegin(GL_QUADS);
             for (int i = 0; i < segmentsX - 1; i++)
