@@ -1646,15 +1646,15 @@ public class RobotRace extends Base
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-                    System.out.println("track: " + Points[1][j]);
+
                     Vector ll = l2.subtract(l1);
                     if (calc == false)
                     {
                         tracklengthcalculator(tracknr,ll.length(),j);    
                     }
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth * (3 - pos), ll.x() / s * trackwidth * (3 - pos), 0)).add(l1);
-                    Vector q = (new Vector(-ll.y() / s * trackwidth * (2 - pos), ll.x() / s * trackwidth * (2 - pos), 0)).add(l2);
+                    Vector p = (new Vector(-ll.y() / s * trackwidth * (7.5 - pos), ll.x() / s * trackwidth * (7.5 - pos), 0)).add(l1);
+                    Vector q = (new Vector(-ll.y() / s * trackwidth * (6.5 - pos), ll.x() / s * trackwidth * (6.5 - pos), 0)).add(l2);
 
                     trackprint(i, p, q);
                 }
@@ -1677,7 +1677,7 @@ public class RobotRace extends Base
 
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth * 2, ll.x() / s * trackwidth * 2, 0)).add(l1);
+                    Vector p = (new Vector(-ll.y() / s * trackwidth * 2.5, ll.x() / s * trackwidth * 2.5, 0)).add(l1);
                     Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
@@ -1700,7 +1700,8 @@ public class RobotRace extends Base
                     Vector ll = l2.subtract(l1);
 
                     Double s = ll.length();
-                    Vector p = (new Vector(ll.y() / s * trackwidth * 2, -ll.x() / s * trackwidth * 2, 0)).add(l1);
+                    Vector p = (new Vector(-ll.y() / s * trackwidth * 6.5, ll.x() / s * trackwidth * 6.5, 0)).add(l1);
+                                
                     Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
