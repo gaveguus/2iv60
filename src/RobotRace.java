@@ -3,6 +3,9 @@ import com.jogamp.opengl.util.texture.Texture;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Random;
+import static javax.media.opengl.GL.GL_REPEAT;
+import static javax.media.opengl.GL.GL_TEXTURE_2D;
+import static javax.media.opengl.GL.GL_TEXTURE_WRAP_S;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.GL2GL3.GL_QUADS;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
@@ -1834,41 +1837,46 @@ public class RobotRace extends Base
         private void drawTestTrack(double widthX, double widthY, double trackWidth, int segments)
         {
             track.bind(gl);
-            gl.glBegin(GL_QUAD_STRIP);
+            gl.glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            gl.glBegin(GL_QUADS);
             double segmentLength = (2 * Math.PI) / segments;
+            double nextStartingX = 0;
 
             //Draw the top of the track
             for (int i = 0; i < segments + 1; i++)
             {
                 double alpha = segmentLength * i;
+                double nextAlpha = segmentLength * (i+1);
 
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
-
-                int textureX = 0;
-                int textureY = 0;
-
-                if (i % 2 != 0)
-                {
-                    textureX = 1;
-                    textureY = 0;
-                }
-
+                
+                double textureX = nextStartingX;
+                double textureY = 0;
+                
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(p.x(), p.y(), p.z());
-
-                if (i % 2 == 0)
-                {
-                    textureX = 0;
-                    textureY = 1;
-                } else
-                {
-                    textureX = 1;
-                    textureY = 1;
-                }
-
+                
+                textureY = 1;
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(q.x(), q.y(), q.z());
+                
+                Vector p2 = new Vector((widthX - 3) * Math.cos(nextAlpha), (widthY - 3) * Math.sin(nextAlpha), 0);
+                Vector q2 = p2.add(new Vector(trackWidth * Math.cos(nextAlpha), trackWidth * Math.sin(nextAlpha), 0));
+                
+                Vector segmentVector = q2.subtract(q);
+                double xLength = segmentVector.length()/trackWidth;
+                
+                textureX = xLength;
+                textureY = 1;
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(q2.x(), q2.y(), q2.z());
+                
+                textureY = 0;
+                gl.glTexCoord2d(textureX, textureY);
+                gl.glVertex3d(p2.x(), p2.y(), p2.z());
+                
+                nextStartingX = xLength % 1;
             }
             gl.glEnd();
 
