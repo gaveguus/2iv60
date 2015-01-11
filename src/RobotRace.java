@@ -1653,8 +1653,8 @@ public class RobotRace extends Base
                         tracklengthcalculator(tracknr,ll.length(),j);    
                     }
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth * (7.5 - pos), ll.x() / s * trackwidth * (7.5 - pos), 0)).add(l1);
-                    Vector q = (new Vector(-ll.y() / s * trackwidth * (6.5 - pos), ll.x() / s * trackwidth * (6.5 - pos), 0)).add(l2);
+                    Vector p = (new Vector(ll.y() / s * trackwidth * (4 - pos), -ll.x() / s * trackwidth * (4 - pos), 0)).add(l1);
+                    Vector q = (new Vector(ll.y() / s * trackwidth * (3 - pos), -ll.x() / s * trackwidth * (3 - pos), 0)).add(l2);
 
                     trackprint(i, p, q);
                 }
@@ -1677,7 +1677,7 @@ public class RobotRace extends Base
 
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth * 2.5, ll.x() / s * trackwidth * 2.5, 0)).add(l1);
+                    Vector p = (new Vector(-ll.y() / s * trackwidth , ll.x() / s * trackwidth , 0)).add(l1);
                     Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
@@ -1700,7 +1700,7 @@ public class RobotRace extends Base
                     Vector ll = l2.subtract(l1);
 
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth * 6.5, ll.x() / s * trackwidth * 6.5, 0)).add(l1);
+                    Vector p = (new Vector(ll.y() / s * trackwidth * 3, -ll.x() / s * trackwidth * 3, 0)).add(l1);
                                 
                     Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
@@ -1733,7 +1733,7 @@ public class RobotRace extends Base
             
             Vector LL = L2.subtract(L1);
             Double s = LL.length();
-            Vector p = (new Vector(-LL.y() / s * trackwidth * (3 - pos + 0.5 * trackwidth), LL.x() / s * trackwidth * (3 - pos + 0.5*trackwidth), 0)).add(L1);
+            Vector p = (new Vector(LL.y() / s * trackwidth * (2.5- pos ), -LL.x() / s * trackwidth * (2.5-  pos ), 0)).add(L1);
             return p;
         }
 
@@ -1982,9 +1982,53 @@ public class RobotRace extends Base
                     
                     return position;
                 case 2: // L track
-                    break;
+                    
+                    tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceL[r.trackpartcount];
+                    
+                    System.out.println(r.trackpartcount);
+                    if (tracktime > 1)
+                    {
+                        
+                        r.distanceTraversed += trackpartdistanceL[r.trackpartcount];
+                        r.trackpartcount+=1;
+                        if (r.trackpartcount > 7)
+                        {
+                            r.trackpartcount = 0;
+                        }
+                        
+                    }
+                    
+                    
+                    position =robotpos(controlPointsLTrack, BuildLTrack, r.trackpartcount, trackwidth,pos , tracktime);
+                    if (pos ==1)
+                    {
+                        System.out.println(r.trackpartcount);
+                    }
+                    
+                    return position;
                 case 3: // C track
-                    break;
+                    tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceC[r.trackpartcount];
+                    
+                    System.out.println(r.trackpartcount);
+                    if (tracktime > 1)
+                    {
+                        
+                        r.distanceTraversed += trackpartdistanceC[r.trackpartcount];
+                        r.trackpartcount+=1;
+                        if (r.trackpartcount > 3)
+                        {
+                            r.trackpartcount = 0;
+                        }
+                        
+                    }
+                    
+                    
+                    position =robotpos(controlPointsCTrack, BuildCTrack, r.trackpartcount, trackwidth,pos , tracktime);
+                    if (pos ==1)
+                    {
+                        System.out.println(r.trackpartcount);
+                    }
+                    return position;
                 case 4: // Custom track
                     break;
             }
