@@ -1709,15 +1709,7 @@ public class RobotRace extends Base
             gl.glEnd();
         }
 
-        public Vector robotpath(Vector[][] Points, int Buildtype[], double trackwidth, int tracknr, double t)
-        {
-            int L = Buildtype.length;
-            for (int j = 0; j < L; j++)
-            {
 
-            }
-            return Vector.O;
-        }
 
         public Vector robotpos(Vector[][] Points, int Buildtype[], int j, double trackwidth, int pos, double time)
         {
@@ -1729,8 +1721,8 @@ public class RobotRace extends Base
             Vector[] beginandend = findpoint(Buildtype, Points, j, time, 0.01);
             Vector L1 = beginandend[0];
             Vector L2 = beginandend[1];
-            
             Vector LL = L2.subtract(L1);
+
             Double s = LL.length();
             Vector p = (new Vector(LL.y() / s * trackwidth * (2.5- pos ), -LL.x() / s * trackwidth * (2.5-  pos ), 0)).add(L1);
             return p;
@@ -2009,7 +2001,7 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsLTrack, BuildLTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
+                        System.out.println("trackpart: " + r.trackpartcount + " position: " + position);
                     }
                     
                     return position;
