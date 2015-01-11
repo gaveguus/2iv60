@@ -247,15 +247,15 @@ public class RobotRace extends Base
             
             r.walkAnim(gs.tAnim);
 
-            double distance = (lap / r.speed % 1);
-            r.distanceTraversed += distance;
+            double distance = (lap / r.speed);
+            
 
-            r.move(raceTrack.getPoint(gs.trackNr, (float) distance, raceTrack.getShift(i), trackwidth));
+            r.move(raceTrack.getPoint(gs.trackNr, (float) lap, raceTrack.getShift(i), trackwidth));
 
             r.drawStickFigure = gs.showStick;
             r.draw();
 
-            Vector tangent = raceTrack.getTangent(gs.trackNr, lap / r.speed % 1, i);
+            Vector tangent = raceTrack.getTangent(gs.trackNr, lap , i);
             double anglePhi = Math.atan2(tangent.y(), tangent.x());
             double anglethetax = Math.atan(tangent.z() / tangent.y());
             double anglethetay = Math.atan(tangent.z() / tangent.x());
@@ -1065,6 +1065,7 @@ public class RobotRace extends Base
         protected Vector position;
         protected double rotate;
         public double distanceTraversed;
+        public int trackpartcount=0;
 
         /**
          * The material from which this robot is built.
@@ -1089,7 +1090,7 @@ public class RobotRace extends Base
             this.startPosition = startPosition;
             this.position = startPosition;
             this.distanceTraversed = 0;
-            
+            this.trackpartcount = 0;
 
             //Use a torso as the root limb
             rootLimb = new Torso(this);
@@ -1123,7 +1124,7 @@ public class RobotRace extends Base
             double maxAngle = 35;
             double period = 5;
             double sine = Math.sin((1/period)*2*Math.PI * t);
-            System.out.println(sine);
+            //System.out.println(sine);
             
             double newAngle = maxAngle*sine;
             leg.rotationXYZ = new double[]{0,newAngle,0};
@@ -1379,8 +1380,12 @@ public class RobotRace extends Base
         /**
          * Array with control points for the O-track.
          */
-        private int trackpartcount=0;
+        
         private double tracktime = 0;
+        private int calculatedOtrack =0;
+        private int calculatedLtrack =0;
+        private int calculatedCtrack =0;
+        private int calculatedCustomtrack =0;
         
         private double [] trackparttimeO = new double[2];
         private double [] trackpartdistanceO = new double[2];
@@ -1610,7 +1615,7 @@ public class RobotRace extends Base
                     }
             }
         }
-        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos, int tracknr)
+        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos, int tracknr, int calc)
         {
             // draw part of top side of the track
             track.bind(gl);
@@ -1627,7 +1632,10 @@ public class RobotRace extends Base
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
                     Vector ll = l2.subtract(l1);
-                    tracklengthcalculator(tracknr,ll.length(),j);
+                    if (calc == 0)
+                    {
+                        tracklengthcalculator(tracknr,ll.length(),j);    
+                    }
                     Double s = ll.length();
                     Vector p = (new Vector(-ll.y() / s * trackwidth * (3 - pos), ll.x() / s * trackwidth * (3 - pos), 0)).add(l1);
                     Vector q = (new Vector(-ll.y() / s * trackwidth * (2 - pos), ll.x() / s * trackwidth * (2 - pos), 0)).add(l2);
@@ -1749,7 +1757,8 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1,1);
+                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1,1, calculatedOtrack);
+                    calculatedOtrack = 1;
                 }
 
                 // The L-track is selected
@@ -1763,7 +1772,8 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1,2);
+                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1,2,calculatedLtrack);
+                    calculatedLtrack = 1;
                 }
 
             } else if (3 == trackNr)
@@ -1776,7 +1786,8 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1,3);
+                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1,3,calculatedCtrack);
+                    calculatedCtrack = 1;
                 }
 
                 // The custom track is selected
@@ -1790,7 +1801,8 @@ public class RobotRace extends Base
                 for (int i = 0; i < 4; i++)
                 {
                     gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1,4);
+                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1,4,calculatedCustomtrack);
+                    calculatedCustomtrack = 1;
                 }
             }
         }
@@ -1916,19 +1928,20 @@ public class RobotRace extends Base
                 // t is time/speed
         {
             int pos = (int) shift/6;
+            Robot r = robots[pos];
             Vector position;
             switch (trackNr)
             {
                 case 0:
-                    position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t), (shift + 70) * Math.sin(2 * Math.PI * t), 1d);
+                    position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t/r.speed), (shift + 70) * Math.sin(2 * Math.PI * t/r.speed), 1d);
                     //System.out.println(t);
                     return position; // <- code goes here
                 case 1: // O track
-                    switch (trackpartcount)
+                    switch (r.trackpartcount)
                     {
                         case 0:
                         {
-                            tracktime = (t-totaltrackdistanceO)/trackpartdistanceO[trackpartcount];
+                            tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceO[r.trackpartcount];
                             break;
                         }
                         case 1:
@@ -1938,24 +1951,28 @@ public class RobotRace extends Base
                         }
                         default:
                         {
-                            trackpartcount = 0;
+                            r.trackpartcount = 0;
                             break;
                         }
                     }
                     
-                    if (tracktime < 1)
+                    if (tracktime == 1)
                     {
-                        trackpartcount+=1;
+                        r.distanceTraversed += trackpartdistanceO[r.trackpartcount];
+                        r.trackpartcount+=1;
                     }
-                    if (trackpartcount > 2)
+                    if (r.trackpartcount > 2)
                     {
-                        trackpartcount = 0;
-                        //lab +=1
+                        r.trackpartcount = 0;
                     }
                     
-                    position =robotpos(controlPointsOTrack, BuildOTrack, trackpartcount, trackwidth,pos , tracktime);
+                    position =robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth,pos , tracktime);
+                    if (pos ==1)
+                    {
+                        System.out.println(tracktime);
+                    }
                     
-                    break;
+                    return position;
                 case 2: // L track
                     break;
                 case 3: // C track
