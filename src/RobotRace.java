@@ -1729,7 +1729,6 @@ public class RobotRace extends Base
             Vector[] beginandend = findpoint(Buildtype, Points, j, time, 0.01);
             Vector L1 = beginandend[0];
             Vector L2 = beginandend[1];
-            System.out.println("Robot: " + Points[1][j]);
             
             Vector LL = L2.subtract(L1);
             Double s = LL.length();
@@ -1957,13 +1956,16 @@ public class RobotRace extends Base
                     //System.out.println(t);
                     return position; // <- code goes here
                 case 1: // O track
-
+                    if (r.trackpartcount >1) // Prevents errors if switched from a larger track to a smaller one
+                    {
+                        r.trackpartcount = 0;
+                    }
                     tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceO[r.trackpartcount];
                     
-                    System.out.println(r.trackpartcount);
+
                     if (tracktime > 1)
                     {
-                        
+                        tracktime = 0;
                         r.distanceTraversed += trackpartdistanceO[r.trackpartcount];
                         r.trackpartcount+=1;
                         if (r.trackpartcount > 1)
@@ -1977,18 +1979,23 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println(r.trackpartcount);
+                        System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
                     
                     return position;
                 case 2: // L track
+                {
+                    if (r.trackpartcount >7) // Prevents errors if switched from a larger track to a smaller one
+                    {
+                        r.trackpartcount = 0;
+                    }
                     
                     tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceL[r.trackpartcount];
                     
-                    System.out.println(r.trackpartcount);
+
                     if (tracktime > 1)
                     {
-                        
+                        tracktime = 0;
                         r.distanceTraversed += trackpartdistanceL[r.trackpartcount];
                         r.trackpartcount+=1;
                         if (r.trackpartcount > 7)
@@ -2002,17 +2009,23 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsLTrack, BuildLTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println(r.trackpartcount);
+                        System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
                     
                     return position;
+                }
                 case 3: // C track
+                {
+                    if (r.trackpartcount >3) // Prevents errors if switched from a larger track to a smaller one
+                    {
+                        r.trackpartcount = 0;
+                    }
                     tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceC[r.trackpartcount];
                     
-                    System.out.println(r.trackpartcount);
+                    
                     if (tracktime > 1)
                     {
-                        
+                        tracktime = 0;
                         r.distanceTraversed += trackpartdistanceC[r.trackpartcount];
                         r.trackpartcount+=1;
                         if (r.trackpartcount > 3)
@@ -2026,9 +2039,10 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsCTrack, BuildCTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println(r.trackpartcount);
+                        System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
                     return position;
+                }
                 case 4: // Custom track
                     break;
             }
