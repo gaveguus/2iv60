@@ -1351,6 +1351,7 @@ public class RobotRace extends Base
         
         private double [] trackparttimeO = new double[2];
         private double [] trackpartdistanceO = new double[2];
+        private double totaltrackdistanceO = 0;
         private Vector[][] controlPointsOTrack = 
         {
             {
@@ -1372,6 +1373,7 @@ public class RobotRace extends Base
          */
         private double [] trackparttimeL = new double[8];
         private double [] trackpartdistanceL = new double[8];
+        private double totaltrackdistanceL = 0;
         private Vector[][] controlPointsLTrack =
         {
             {
@@ -1411,6 +1413,7 @@ public class RobotRace extends Base
          */
         private double [] trackparttimeC = new double[4];
         private double [] trackpartdistanceC = new double[4];
+        private double totaltrackdistanceC = 0;
         private Vector[][] controlPointsCTrack =
         {
             {
@@ -1438,6 +1441,7 @@ public class RobotRace extends Base
          */
         private double [] trackparttimeCustom = new double[3];
         private double [] trackpartdistanceCustom = new double[3];
+        private double totaltrackdistanceCustom = 0;
         private Vector[][] controlPointsCustomTrack =
         {
             {
@@ -1539,7 +1543,8 @@ public class RobotRace extends Base
                     {
                         if (j <trackpartdistanceO.length)
                         {
-                            trackpartdistanceO[j] = trackpartdistanceO[j] +ll; 
+                            trackpartdistanceO[j] +=ll; 
+                            totaltrackdistanceO +=ll;
                             break;
                         }
                     }
@@ -1547,7 +1552,8 @@ public class RobotRace extends Base
                     {
                         if (j <trackpartdistanceL.length)
                         {
-                            trackpartdistanceL[j] = trackpartdistanceL[j] +ll; 
+                            trackpartdistanceL[j] +=ll; 
+                            totaltrackdistanceL +=ll;
                             break;
                         }
                     }
@@ -1555,7 +1561,8 @@ public class RobotRace extends Base
                     {
                         if (j <trackpartdistanceC.length)
                         {
-                            trackpartdistanceC[j] = trackpartdistanceC[j] +ll; 
+                            trackpartdistanceC[j] +=ll; 
+                            totaltrackdistanceC +=ll;
                             break;
                         }
                     }
@@ -1563,7 +1570,8 @@ public class RobotRace extends Base
                     {
                         if (j <trackpartdistanceCustom.length)
                         {
-                            trackpartdistanceCustom[j] = trackpartdistanceCustom[j] +ll; 
+                            trackpartdistanceCustom[j] +=ll; 
+                            totaltrackdistanceCustom +=ll;
                             break;
                         }
                     }
@@ -1668,11 +1676,6 @@ public class RobotRace extends Base
             Double s = LL.length();
             Vector p = (new Vector(-LL.y() / s * trackwidth * (3 - pos+0.5*trackwidth), LL.x() / s * trackwidth * (3 - pos+0.5*trackwidth), 0)).add(L1);
             return p;
-        }
-
-        public RaceTrack()
-        {
-
         }
 
         public float getShift(int trackNr)
@@ -1877,6 +1880,7 @@ public class RobotRace extends Base
          * Returns the position of the curve at 0 <= {@code t} <= 1.
          */
         public Vector getPoint(int trackNr, double t, double shift, double trackwidth)
+                // t is time/speed
         {
             int pos = (int) shift/6;
             Vector position;
@@ -1891,11 +1895,12 @@ public class RobotRace extends Base
                     {
                         case 0:
                         {
-                            tracktime = gs.tAnim;
+                            tracktime = (t-totaltrackdistanceO)/trackpartdistanceO[trackpartcount];
                             break;
                         }
                         case 1:
                         {
+                            
                             break;
                         }
                         default:
@@ -1912,6 +1917,7 @@ public class RobotRace extends Base
                     if (trackpartcount > 2)
                     {
                         trackpartcount = 0;
+                        //lab +=1
                     }
                     
                     position =robotpos(controlPointsOTrack, BuildOTrack, trackpartcount, trackwidth,pos , tracktime);
