@@ -1037,7 +1037,7 @@ public class RobotRace extends Base {
 
         public double speed;
 
-        private Random rand;
+        private final Random rand;
 
         /**
          * Constructs the robot with initial parameters.
@@ -1054,8 +1054,8 @@ public class RobotRace extends Base {
 
             this.rand = rand;
 
+            //The speed of the robot is gradually changed using a random number 
             this.speed = 20 + rand.nextDouble() * 2;
-            // code goes here ...
         }
 
         public void move(Vector offset) {
@@ -1063,27 +1063,43 @@ public class RobotRace extends Base {
             this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 200);
         }
 
+        /**
+         * Positions all of the robot's legs according to a certain time
+         * @param t 
+         */
         public void walkAnim(double t) {
             t *= speed / 8;
 
             //The animation cycle or each leg has a startingpoint that is
-            //0.25 t higher than the previous leg        
+            //0.4 t higher than the previous leg        
             animateLeg(t, ((Torso) rootLimb).foreLegLeft);
             animateLeg(t + 0.4, ((Torso) rootLimb).hindLegRight);
             animateLeg(t + 0.8, ((Torso) rootLimb).foreLegRight);
             animateLeg(t + 1.2, ((Torso) rootLimb).hindLegLeft);
         }
 
+        /**
+         * Positions the given robotleg (by rotating around its local origin)
+         * @param t Value of which the t%1 determines the position of the leg.
+         * @param leg The leg to animate
+         */
         public void animateLeg(double t, UpperLeg leg) {
+            //The angle the legs can make (relative to the vector (0,0-1) from the local origin)
             double maxAngle = 35;
+            //Multiplier for the time it takes to complete one animation cycle
             double period = 5;
+            
+            //The leg's animation is done by using a sine wave to manipulate the anlge at which a leg is located
             double sine = Math.sin((1 / period) * 2 * Math.PI * t);
 
             double newAngle = maxAngle * sine;
+            
+            //Rotate the upperleg
             leg.rotationXYZ = new double[]{
                 0, newAngle, 0
             };
 
+            //Rotate the lowerleg accordingly
             if (newAngle < 0) {
                 leg.lowerLeg.rotationXYZ = new double[]{
                     0, -newAngle, 0
@@ -1907,13 +1923,6 @@ public class RobotRace extends Base {
     private class Terrain {
 
         /**
-         * Can be used to set up a display list.
-         */
-        public Terrain() {
-            // code goes here ...
-        }
-
-        /**
          * Draws the terrain.
          */
         public void draw() {
@@ -1943,22 +1952,15 @@ public class RobotRace extends Base {
 
             //Make sure the track is a bit elevated above the terrain
             gl.glTranslated(-widthX / 2, -widthY / 2, -5);
-
-            //The colors to use in the height map
-            /*Buffer lineTexArray = ByteBuffer.wrap(new byte[]
-             {
-             0, 0, (byte) 255,
-             (byte) 255, (byte) 241, (byte) 121,
-             (byte) 63, (byte) 205, 0,
-             (byte) 145, (byte) 75, 0
-
-             });
-             gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-             gl.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, lineTexArray);*/
+        
             gl.glDisable(GL_TEXTURE_2D);
             gl.glEnable(GL_TEXTURE_1D);
+            
+            //Bind the terrain texture
             terrainTexture.bind(gl);
             gl.glBegin(GL_QUADS);
+            
+            //Draw the surface
             for (int i = 0; i < segmentsX - 1; i++) {
                 float x = i * dx;
                 for (int j = 0; j < segmentsY - 1; j++) {
@@ -1983,9 +1985,10 @@ public class RobotRace extends Base {
             gl.glEnd();
             gl.glDisable(GL_TEXTURE_1D);
             gl.glEnable(GL_TEXTURE_2D);
-            gl.glColor4d(155, 155, 155, 0.4);
 
+            //Draw the 'water' surface
             gl.glBegin(GL_QUADS);
+            gl.glColor4d(155, 155, 155, 0.2);
             gl.glVertex3d(0, 0, 0);
             gl.glVertex3d(widthX, 0, 0);
             gl.glVertex3d(widthX, widthY, 0);
