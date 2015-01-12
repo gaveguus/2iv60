@@ -246,7 +246,7 @@ public class RobotRace extends Base
         }
 
         // Draw the robots
-        for (int i = 0; i < robots.length; i++)
+        for (int i = 0; i < 1; i++)//robots.length
         {
             Robot r = robots[i];
 
@@ -262,8 +262,8 @@ public class RobotRace extends Base
 
             Vector tangent = raceTrack.getTangent(gs.trackNr, lap , i);
             double anglePhi = Math.atan2(tangent.y(), tangent.x());
-            double anglethetax = Math.atan(tangent.z() / tangent.y());
-            double anglethetay = Math.atan(tangent.z() / tangent.x());
+            double anglethetax = 0;//Math.atan2(tangent.z() , tangent.y());
+            double anglethetay = 0;//Math.atan2(tangent.z() , tangent.x());
 
 //            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / r.speed % 1, i);
 //            Vector parallel = alongTrack.normalized().scale(25).add(r.position);
@@ -1422,19 +1422,19 @@ public class RobotRace extends Base
         private Vector[][] controlPointsLTrack =
         {
             {
-                new Vector(0, -75, 0), new Vector(60, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                new Vector(0, -75, 0), new Vector(90, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
             },
             {
-                new Vector(60, -75, 0), new Vector(60, -15, 0), new Vector(90, -75, 0), new Vector(90, -15, 0)
+                new Vector(90, -75, 0), new Vector(90, -15, 0), new Vector(120, -75, 0), new Vector(120, -15, 0)
             },
             {
-                new Vector(60, -15, 0), new Vector(45, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                new Vector(90, -15, 0), new Vector(75, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
             },
             {
-                new Vector(45, -15, 0), new Vector(30, 0, 0), new Vector(35, -15, 0), new Vector(0, 0, 0)
+                new Vector(75, -15, 0), new Vector(30, 20, 0), new Vector(35, -15, 0), new Vector(0, 0, 0)
             },
             {
-                new Vector(30, 0, 0), new Vector(30, 90, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                new Vector(30, 20, 0), new Vector(30, 90, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
             },
             {
                 new Vector(30, 90, 0), new Vector(-30, 90, 0), new Vector(30, 120, 0), new Vector(-30, 120, 0)
@@ -1723,7 +1723,7 @@ public class RobotRace extends Base
             Vector L2 = beginandend[1];
             Vector LL = L2.subtract(L1);
 
-            Double s = LL.length();
+            double s = LL.length();
             Vector p = (new Vector(LL.y() / s * trackwidth * (2.5- pos ), -LL.x() / s * trackwidth * (2.5-  pos ), 0)).add(L1);
             return p;
         }
@@ -1971,7 +1971,7 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
+                       // System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
                     
                     return position;
@@ -2001,7 +2001,7 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsLTrack, BuildLTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println("trackpart: " + r.trackpartcount + " position: " + position);
+                        //System.out.println("trackpart: " + r.trackpartcount + " position: " + position);
                     }
                     
                     return position;
@@ -2031,7 +2031,7 @@ public class RobotRace extends Base
                     position =robotpos(controlPointsCTrack, BuildCTrack, r.trackpartcount, trackwidth,pos , tracktime);
                     if (pos ==1)
                     {
-                        System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
+                       // System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
                     return position;
                 }
@@ -2048,8 +2048,9 @@ public class RobotRace extends Base
         public Vector getTangent(int trackNr, double t, int laneNr)
         {
             Vector point1 = getPoint(trackNr, t, laneNr, 0d);
-            Vector point2 = getPoint(trackNr, t + 0.001, laneNr, 0d);
+            Vector point2 = getPoint(trackNr, t + 0.1, laneNr, 0d);
             return point2.subtract(point1);
+            
         }
 
     }
