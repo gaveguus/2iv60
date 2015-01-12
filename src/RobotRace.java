@@ -8,6 +8,7 @@ import static javax.media.opengl.GL.GL_TEXTURE_2D;
 import static javax.media.opengl.GL.GL_TEXTURE_WRAP_S;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.GL2GL3.GL_QUADS;
+import static javax.media.opengl.GL2GL3.GL_TEXTURE_1D;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_DIFFUSE;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
@@ -15,6 +16,7 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT1;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SPECULAR;
 import robotrace.Base;
+import robotrace.Texture1D;
 import robotrace.Vector;
 
 /**
@@ -70,6 +72,8 @@ public class RobotRace extends Base
      * Instance of the terrain.
      */
     private final Terrain terrain;
+    
+    private Texture1D terrainTexture;
 
     /**
      * Constructs this robot race by initializing robots, camera, track, and
@@ -170,6 +174,7 @@ public class RobotRace extends Base
         brick = loadTexture("brick.jpg");
         head = loadTexture("head.jpg");
         torso = loadTexture("torso.jpg");
+        terrainTexture = new Texture1D(gl, new Vector[]{new Vector(0, 0, 1), new Vector(1, 0.95, 0.47),new Vector(0.247, 0.804, 0),new Vector(0.57, 0.294, 0)});
     }
 
     /**
@@ -2101,7 +2106,7 @@ public class RobotRace extends Base
             gl.glTranslated(-widthX / 2, -widthY / 2, -5);
 
             //The colors to use in the height map
-            Buffer lineTexArray = ByteBuffer.wrap(new byte[]
+            /*Buffer lineTexArray = ByteBuffer.wrap(new byte[]
             {
                 0, 0, (byte) 255,
                 (byte) 255, (byte) 241, (byte) 121,
@@ -2110,7 +2115,10 @@ public class RobotRace extends Base
 
             });
             gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            gl.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, lineTexArray);
+            gl.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, lineTexArray);*/
+            gl.glDisable(GL_TEXTURE_2D);
+            gl.glEnable(GL_TEXTURE_1D);
+            terrainTexture.bind(gl);
             gl.glBegin(GL_QUADS);
             for (int i = 0; i < segmentsX - 1; i++)
             {
@@ -2119,24 +2127,25 @@ public class RobotRace extends Base
                 {
                     float y = j * dy;
                     float height = heightAt(x / periodX, y / periodY);
-                    gl.glTexCoord1d(height);
+                    gl.glTexCoord1d((height/2)+0.5);
                     gl.glVertex3d(x, y, height * amplitude - shift);
 
                     height = heightAt((x + dx) / periodX, y / periodY);
-                    gl.glTexCoord1d(height);
+                    gl.glTexCoord1d((height/2)+0.5);
                     gl.glVertex3d(x + dx, y, height * amplitude - shift);
 
                     height = heightAt((x + dx) / periodX, (y + dx) / periodY);
-                    gl.glTexCoord1d(height);
+                    gl.glTexCoord1d((height/2)+0.5);
                     gl.glVertex3d(x + dx, y + dx, height * amplitude - shift);
 
                     height = heightAt(x / periodX, (y + dx) / periodY);
-                    gl.glTexCoord1d(height);
+                    gl.glTexCoord1d((height/2)+0.5);
                     gl.glVertex3d(x, y + dx, height * amplitude - shift);
                 }
             }
             gl.glEnd();
-            
+            gl.glDisable(GL_TEXTURE_1D);
+            gl.glEnable(GL_TEXTURE_2D);
             gl.glColor4d(155, 155, 155, 0.4);
             
             gl.glBegin(GL_QUADS);
