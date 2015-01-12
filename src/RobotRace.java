@@ -1,4 +1,3 @@
-
 import com.jogamp.opengl.util.texture.Texture;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -50,8 +49,7 @@ import robotrace.Vector;
  * define the primitives of the object yourself (as seen above) or add
  * additional textured primitives to the GLUT object.
  */
-public class RobotRace extends Base
-{
+public class RobotRace extends Base {
 
     /**
      * Array of the four robots.
@@ -72,15 +70,14 @@ public class RobotRace extends Base
      * Instance of the terrain.
      */
     private final Terrain terrain;
-    
+
     private Texture1D terrainTexture;
 
     /**
      * Constructs this robot race by initializing robots, camera, track, and
      * terrain.
      */
-    public RobotRace()
-    {
+    public RobotRace() {
         // Create a new array of four robots
         robots = new Robot[4];
 
@@ -108,30 +105,29 @@ public class RobotRace extends Base
         terrain = new Terrain();
     }
 
-    float Lightcolor1[] =
-    {
-        0.0f, 0.0f, 0.0f, 1f
-    };
-    float Ambientcolor1[] =
-    {
-        0.0f, 0.0f, 0.0f, 1
-    };
-    float Lightcolor2[] =
-    {
-        0.7f, 0.7f, 0.7f, 1f
-    };
-    float Ambientcolor2[] =
-    {
-        0.3f, 0.3f, 0.3f, 1
-    };
+    float Lightcolor1[]
+            = {
+                0.0f, 0.0f, 0.0f, 1f
+            };
+    float Ambientcolor1[]
+            = {
+                0.0f, 0.0f, 0.0f, 1
+            };
+    float Lightcolor2[]
+            = {
+                0.7f, 0.7f, 0.7f, 1f
+            };
+    float Ambientcolor2[]
+            = {
+                0.3f, 0.3f, 0.3f, 1
+            };
 
     /**
      * Called upon the start of the application. Primarily used to configure
      * OpenGL.
      */
     @Override
-    public void initialize()
-    {
+    public void initialize() {
 
         //Initialize the shadeing model and two lights, one is an ambient light and the other will be placed near the camera.
         gl.glShadeModel(GL_SMOOTH);
@@ -174,15 +170,14 @@ public class RobotRace extends Base
         brick = loadTexture("brick.jpg");
         head = loadTexture("head.jpg");
         torso = loadTexture("torso.jpg");
-        terrainTexture = new Texture1D(gl, new Vector[]{new Vector(0, 0, 1), new Vector(1, 0.95, 0.47),new Vector(0.247, 0.804, 0),new Vector(0.57, 0.294, 0)});
+        terrainTexture = new Texture1D(gl, new Vector[]{new Vector(0, 0, 1), new Vector(1, 0.95, 0.47), new Vector(0.247, 0.804, 0), new Vector(0.57, 0.294, 0)});
     }
 
     /**
      * Configures the viewing transform.
      */
     @Override
-    public void setView()
-    {
+    public void setView() {
         // Select part of window.
         gl.glViewport(0, 0, gs.w, gs.h);
 
@@ -199,20 +194,20 @@ public class RobotRace extends Base
         gl.glLoadIdentity();
 
         //This light is located near the camera
-        float posLight2[] =
-        {
-            -5, 5, 0, 1f
-        };
+        float posLight2[]
+                = {
+                    -5, 5, 0, 1f
+                };
         gl.glLightfv(GL_LIGHT1, GL_POSITION, posLight2, 0);
 
         // Update the view according to the camera mode
         camera.update(gs.camMode);
 
         //This light stays at the same location
-        float posLight1[] =
-        {
-            3, 2, 5, 1f
-        };
+        float posLight1[]
+                = {
+                    3, 2, 5, 1f
+                };
         gl.glLightfv(GL_LIGHT0, GL_POSITION, posLight1, 0);
 
     }
@@ -221,8 +216,7 @@ public class RobotRace extends Base
      * Draws the entire scene.
      */
     @Override
-    public void drawScene()
-    {
+    public void drawScene() {
         double trackwidth = 6;
         double lap = gs.tAnim;
 
@@ -245,31 +239,33 @@ public class RobotRace extends Base
         gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Draw the axis frame
-        if (gs.showAxes)
-        {
+        if (gs.showAxes) {
             drawAxisFrame();
         }
 
         // Draw the robots
-        for (int i = 0; i < 1; i++)//robots.length
-        {
+        for (int i = 0; i < robots.length; i++) {
             Robot r = robots[i];
 
             r.walkAnim(gs.tAnim);
 
             double distance = (lap / r.speed);
-            
 
             r.move(raceTrack.getPoint(gs.trackNr, (float) lap, i, trackwidth));
 
             r.drawStickFigure = gs.showStick;
             r.draw();
 
-            Vector tangent = raceTrack.getTangent(gs.trackNr, lap , i);
+            Vector tangent = raceTrack.getTangent(gs.trackNr, lap, i);
             double anglePhi = Math.atan2(tangent.y(), tangent.x());
-            double anglethetax = 0;//Math.atan2(tangent.z() , tangent.y());
-            double anglethetay = 0;//Math.atan2(tangent.z() , tangent.x());
-
+            double anglethetax = 0;//-360/(2*Math.PI)*Math.atan2(tangent.y(), tangent.z());
+            double anglethetay;
+            if (tangent.z() == 0) {
+                anglethetay = 0;
+            } else {
+                anglethetay = 90 + 360 / (2 * Math.PI) * Math.atan2(tangent.x(), tangent.z());
+            }
+            System.out.println(tangent);
 //            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / r.speed % 1, i);
 //            Vector parallel = alongTrack.normalized().scale(25).add(r.position);
 //
@@ -279,8 +275,7 @@ public class RobotRace extends Base
 //            gl.glEnd();
 //            gl.glFlush();
             //Math.toDegrees(anglePhi);
-            double[] rotationXYZ = new double[]
-            {
+            double[] rotationXYZ = new double[]{
                 anglethetax, anglethetay, anglePhi
             };
 
@@ -303,8 +298,7 @@ public class RobotRace extends Base
      * Draws the x-axis (red), y-axis (green), z-axis (blue), and origin
      * (yellow).
      */
-    public void drawAxisFrame()
-    {
+    public void drawAxisFrame() {
         //Draw the x-axis
         gl.glPushMatrix();
         gl.glColor3f(1f, 0f, 0f);
@@ -357,8 +351,7 @@ public class RobotRace extends Base
      * @param mappingCoordinates The order in which the coordinates should be
      * specified is: right, front, left, back, bottom, top
      */
-    public void drawCube(Texture texture, QuadTexMappingCoordinates[] mappingCoordinates)
-    {
+    public void drawCube(Texture texture, QuadTexMappingCoordinates[] mappingCoordinates) {
         texture.bind(gl);
 
         gl.glBegin(GL_QUADS);
@@ -429,23 +422,19 @@ public class RobotRace extends Base
     /**
      * Materials that can be used for the robots.
      */
-    public enum Material
-    {
+    public enum Material {
 
         /**
          * Gold material properties.
          */
         GOLD(
-                new float[]
-                {
+                new float[]{
                     0.75f, 0.6f, 0.22f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.63f, 0.55f, 0.36f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.25f, 0.1995f, 0.0745f
                 },
                 0.6f
@@ -454,16 +443,13 @@ public class RobotRace extends Base
          * Silver material properties.
          */
         SILVER(
-                new float[]
-                {
+                new float[]{
                     0.5f, 0.5f, 0.5f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.5f, 0.5f, 0.5f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.1925f, 0.1925f, 0.1925f
                 },
                 0.5f
@@ -473,16 +459,13 @@ public class RobotRace extends Base
          * like wood.
          */
         WOOD(
-                new float[]
-                {
+                new float[]{
                     0.54f, 0.27f, 0.075f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.1f, 0.05f, 0.05f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.01f, 0.01f, 0.05f
                 },
                 0.1f
@@ -491,16 +474,13 @@ public class RobotRace extends Base
          * Orange material properties.
          */
         ORANGE(
-                new float[]
-                {
+                new float[]{
                     1f, 0.45f, 0f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.05f, 0.05f, 0.05f, 1.0f
                 },
-                new float[]
-                {
+                new float[]{
                     0.0f, 0.0f, 0.0f
                 },
                 0.0f
@@ -531,8 +511,7 @@ public class RobotRace extends Base
         /**
          * Constructs a new material with diffuse and specular properties.
          */
-        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess, Texture texture)
-        {
+        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess, Texture texture) {
             this.diffuse = diffuse;
             this.specular = specular;
             this.ambient = ambient;
@@ -540,8 +519,7 @@ public class RobotRace extends Base
             this.texture = texture;
         }
 
-        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess)
-        {
+        private Material(float[] diffuse, float[] specular, float[] ambient, float shininess) {
             this(diffuse, specular, ambient, shininess, null);
         }
     }
@@ -549,8 +527,7 @@ public class RobotRace extends Base
     /**
      * Represents a Robot, to be implemented according to the Assignments.
      */
-    private class Robot
-    {
+    private class Robot {
 
         /*
          * We chose to implement a hierarchichal model for the robot's limbs. A base class "Limb" holds all common info
@@ -572,8 +549,7 @@ public class RobotRace extends Base
          - Foot
          */
         // <editor-fold defaultstate="collapsed" desc="Limb Classes">
-        private abstract class Limb
-        {
+        private abstract class Limb {
 
             /**
              * Each limb has a local origin, this is also the rotation point
@@ -600,12 +576,10 @@ public class RobotRace extends Base
              * @param localOrigin
              * @param robot
              */
-            public Limb(Vector localOrigin, Robot robot)
-            {
+            public Limb(Vector localOrigin, Robot robot) {
                 this.robot = robot;
                 this.localOrigin = localOrigin;
-                this.rotationXYZ = new double[]
-                {
+                this.rotationXYZ = new double[]{
                     0, 0, 0
                 };
             }
@@ -613,8 +587,7 @@ public class RobotRace extends Base
             /**
              * Draws this limb
              */
-            public void draw()
-            {
+            public void draw() {
                 /*
                  Each limb is drawn according to the following precedure:
                  1 - Translate to the limbs local origin
@@ -629,17 +602,15 @@ public class RobotRace extends Base
                 gl.glTranslated(localOrigin.x(), localOrigin.y(), localOrigin.z());
 
                 //Each limb is rotated around its local origin
+                gl.glRotated(rotationXYZ[2], 0, 0, 1);
                 gl.glRotated(rotationXYZ[0], 1, 0, 0);
                 gl.glRotated(rotationXYZ[1], 0, 1, 0);
-                gl.glRotated(rotationXYZ[2], 0, 0, 1);
 
                 float[] color = robot.material.diffuse;
                 gl.glColor4f(color[0], color[1], color[2], color[3]);
-                if (this.robot.drawStickFigure)
-                {
+                if (this.robot.drawStickFigure) {
                     drawStickFigure();
-                } else
-                {
+                } else {
                     drawSolid();
                 }
 
@@ -669,8 +640,7 @@ public class RobotRace extends Base
          * Class for the robot's Torso limb. The torso is the root limb for the
          * robot and is connected to the Head and the Upper legs.
          */
-        private class Torso extends Limb
-        {
+        private class Torso extends Limb {
 
             //The torso has a head, and the upper legs as it's childs
             public Head head;
@@ -689,8 +659,7 @@ public class RobotRace extends Base
              */
             private final double legsOffsetY = 1.4;
 
-            public Torso(Robot robot)
-            {
+            public Torso(Robot robot) {
                 super(new Vector(0, 0, 10.2), robot);
 
                 this.head = new Head(new Vector(4.4, 0, 0), robot);
@@ -701,8 +670,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 //Set the drawing color to black and draw the a line that runs from the neck 
                 //to the back of the torso.
                 gl.glColor3f(0, 0, 0);
@@ -742,8 +710,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //The torso of the robot consists of three blocks, one at the front of the torso, one in the middle and one at the rear.
                 //Draw the middle block
                 gl.glPushMatrix();
@@ -821,8 +788,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 //The torso has the head end four upper legs as child limbs they are drawn accrdingly.
                 this.head.draw();
                 this.foreLegLeft.draw();
@@ -836,20 +802,17 @@ public class RobotRace extends Base
          * The properties of the robot's upper legs are defined in this class.
          * It has one child limb: LowerLeg
          */
-        private class UpperLeg extends Limb
-        {
+        private class UpperLeg extends Limb {
 
             public LowerLeg lowerLeg;
 
-            public UpperLeg(Vector localOrigin, Robot robot)
-            {
+            public UpperLeg(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
                 this.lowerLeg = new LowerLeg(new Vector(0, 0, -6.6), robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 //Draw the line representing the upperleg
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
@@ -864,8 +827,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, -3.3);
                 gl.glScaled(1, 0.5, 6.6);
@@ -874,8 +836,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 this.lowerLeg.draw();
             }
 
@@ -885,20 +846,17 @@ public class RobotRace extends Base
          * The properties of the robot's lower legs are defined in this class.
          * It has one child limb: Foot
          */
-        public class LowerLeg extends Limb
-        {
+        public class LowerLeg extends Limb {
 
             public Foot foot;
 
-            public LowerLeg(Vector localOrigin, Robot robot)
-            {
+            public LowerLeg(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
                 this.foot = new Foot(new Vector(0, 0, -3.4f), robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 //Draw the line representing the lowerleg.
                 gl.glColor3f(0, 0, 0);
                 gl.glBegin(GL_LINES);
@@ -913,8 +871,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //Draw the knee joint
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0.3, 0);
@@ -931,8 +888,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 this.foot.draw();
             }
 
@@ -942,17 +898,14 @@ public class RobotRace extends Base
          * The properties of the robot's feet are defined in this class. It has
          * no child limbs
          */
-        public class Foot extends Limb
-        {
+        public class Foot extends Limb {
 
-            public Foot(Vector localOrigin, Robot robot)
-            {
+            public Foot(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 //Draw the joint sphere (ankle)
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
@@ -970,8 +923,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //Draw the foot, consisting of a large cylinder at the base and a smaller cylinder on top of that.
                 gl.glPushMatrix();
                 gl.glTranslated(0, 0, 0.6);
@@ -982,8 +934,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 //No child limbs
             }
 
@@ -992,17 +943,14 @@ public class RobotRace extends Base
         /**
          * The robot's head. It has no child limbs.
          */
-        public class Head extends Limb
-        {
+        public class Head extends Limb {
 
-            public Head(Vector localOrigin, Robot robot)
-            {
+            public Head(Vector localOrigin, Robot robot) {
                 super(localOrigin, robot);
             }
 
             @Override
-            public void drawStickFigure()
-            {
+            public void drawStickFigure() {
                 //Draw the neck joint
                 gl.glColor3f(1, 0, 0);
                 glut.glutWireSphere(0.3, 5, 5);
@@ -1017,8 +965,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawSolid()
-            {
+            public void drawSolid() {
                 //Draw the head
                 gl.glPushMatrix();
                 gl.glTranslated(1.7, 0, 0);
@@ -1056,8 +1003,7 @@ public class RobotRace extends Base
             }
 
             @Override
-            public void drawChildLimbs()
-            {
+            public void drawChildLimbs() {
                 //No child limbs
             }
 
@@ -1077,7 +1023,7 @@ public class RobotRace extends Base
         protected Vector position;
         protected double rotate;
         public double distanceTraversed;
-        public int trackpartcount=0;
+        public int trackpartcount = 0;
 
         /**
          * The material from which this robot is built.
@@ -1096,8 +1042,7 @@ public class RobotRace extends Base
         /**
          * Constructs the robot with initial parameters.
          */
-        public Robot(Material material, Vector startPosition, Random rand)
-        {
+        public Robot(Material material, Vector startPosition, Random rand) {
             this.material = material;
             this.startPosition = startPosition;
             this.position = startPosition;
@@ -1113,14 +1058,12 @@ public class RobotRace extends Base
             // code goes here ...
         }
 
-        public void move(Vector offset)
-        {
+        public void move(Vector offset) {
             this.position = startPosition.add(offset);
             this.speed = Math.abs(speed + (rand.nextDouble() - 0.5) / 200);
         }
 
-        public void walkAnim(double t)
-        {
+        public void walkAnim(double t) {
             t *= speed / 8;
 
             //The animation cycle or each leg has a startingpoint that is
@@ -1131,36 +1074,29 @@ public class RobotRace extends Base
             animateLeg(t + 1.2, ((Torso) rootLimb).hindLegLeft);
         }
 
-        public void animateLeg(double t, UpperLeg leg)
-        {
+        public void animateLeg(double t, UpperLeg leg) {
             double maxAngle = 35;
             double period = 5;
             double sine = Math.sin((1 / period) * 2 * Math.PI * t);
 
             double newAngle = maxAngle * sine;
-            leg.rotationXYZ = new double[]
-            {
+            leg.rotationXYZ = new double[]{
                 0, newAngle, 0
             };
 
-            if (newAngle < 0)
-            {
-                leg.lowerLeg.rotationXYZ = new double[]
-                {
+            if (newAngle < 0) {
+                leg.lowerLeg.rotationXYZ = new double[]{
                     0, -newAngle, 0
                 };
-            } else
-            {
-                leg.lowerLeg.rotationXYZ = new double[]
-                {
+            } else {
+                leg.lowerLeg.rotationXYZ = new double[]{
                     0, 0.5 * newAngle, 0
                 };
             }
 
         }
 
-        public void rotate(double[] rotationXYZ)
-        {
+        public void rotate(double[] rotationXYZ) {
             this.rootLimb.rotationXYZ[0] = Math.toDegrees(rotationXYZ[0]);
             this.rootLimb.rotationXYZ[1] = Math.toDegrees(rotationXYZ[1]);
             this.rootLimb.rotationXYZ[2] = Math.toDegrees(rotationXYZ[2]);
@@ -1169,8 +1105,7 @@ public class RobotRace extends Base
         /**
          * Draws this robot.
          */
-        public void draw()
-        {
+        public void draw() {
             gl.glPushMatrix();
             gl.glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular, 0);
             gl.glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient, 0);
@@ -1187,8 +1122,7 @@ public class RobotRace extends Base
     /**
      * Implementation of a camera with a position and orientation.
      */
-    private class Camera
-    {
+    private class Camera {
 
         int autoMode = 1;
         int oldTime = 0;
@@ -1212,37 +1146,29 @@ public class RobotRace extends Base
          * Updates the camera viewpoint and direction based on the selected
          * camera mode.
          */
-        public void update(int mode)
-        {
+        public void update(int mode) {
             robots[0].toString();
-            if (1 == mode)
-
-            // Helicopter mode
+            if (1 == mode) // Helicopter mode
             {
                 setHelicopterMode();
 
                 // Motor cycle mode
-            } else if (2 == mode)
-            {
+            } else if (2 == mode) {
                 setMotorCycleMode();
 
                 // First person mode
-            } else if (3 == mode)
-            {
+            } else if (3 == mode) {
                 setFirstPersonMode();
 
                 // Auto mode
-            } else if (4 == mode)
-            {
-                if (autoMode % 4 == 0)
-                {
+            } else if (4 == mode) {
+                if (autoMode % 4 == 0) {
                     autoMode = 1;
                 }
 
                 int time = (int) gs.tAnim;
 
-                switch (autoMode)
-                {
+                switch (autoMode) {
                     case 1:
                         setHelicopterMode();
                         break;
@@ -1254,15 +1180,13 @@ public class RobotRace extends Base
                         break;
                 }
 
-                if (time != oldTime && time % 4 == 0)
-                {
+                if (time != oldTime && time % 4 == 0) {
                     autoMode++;
                 }
 
                 oldTime = time;
 
-            } else
-            {
+            } else {
                 setDefaultMode();
             }
 
@@ -1275,8 +1199,7 @@ public class RobotRace extends Base
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * camera's default mode.
          */
-        private void setDefaultMode()
-        {
+        private void setDefaultMode() {
             Vector centerPoint = new Vector(0, 0, 0);
 
             //Get coordinate values for camera
@@ -1285,8 +1208,7 @@ public class RobotRace extends Base
 
             //To make sure that the image does not disappear when the camera is directly above the scene, 
             //we increase the value for phi when it is near 0.
-            if (Math.abs(cosPhiForUp) <= 0.02)
-            {
+            if (Math.abs(cosPhiForUp) <= 0.02) {
                 phi += 0.025;
             }
 
@@ -1307,8 +1229,7 @@ public class RobotRace extends Base
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * helicopter mode.
          */
-        private void setHelicopterMode()
-        {
+        private void setHelicopterMode() {
             Vector pos0 = robots[0].position;
             Vector pos1 = robots[1].position;
             Vector pos2 = robots[2].position;
@@ -1336,8 +1257,7 @@ public class RobotRace extends Base
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * motorcycle mode.
          */
-        private void setMotorCycleMode()
-        {
+        private void setMotorCycleMode() {
             //We use robots[0] for now
             int laneNr = 0;
             Robot robot = robots[laneNr];
@@ -1364,8 +1284,7 @@ public class RobotRace extends Base
          * Computes {@code eye}, {@code center}, and {@code up}, based on the
          * first person mode.
          */
-        private void setFirstPersonMode()
-        {
+        private void setFirstPersonMode() {
             //We use robots[0] for now
             int laneNr = 0;
             Robot robot = robots[laneNr];
@@ -1393,168 +1312,159 @@ public class RobotRace extends Base
     /**
      * Implementation of a race track that is made from Bezier segments.
      */
-    private class RaceTrack
-    {
+    private class RaceTrack {
 
         /**
          * Array with control points for the O-track.
          */
-        
         private double tracktime = 0;
-        private boolean calctrack =false;
-        
-        private double [] trackpartdistanceO = {111.5677,111.5677};
-        private Vector[][] controlPointsOTrack = 
-        {
-            {
-                new Vector(-40, 0, 0), new Vector(40, 0, 0), new Vector(-40, 40, 0), new Vector(40, 40, 0)
-            },
-            {
-                new Vector(40, 0, 0), new Vector(-40, 0, 0), new Vector(40, -40, 0), new Vector(-40, -40, 0)
-            },
-            {
-                new Vector(-40, -3, 0), new Vector(-40, 3, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            }
-        };
-        private int[] BuildOTrack =
-        {
-            2, 2, 0
-        };
+        private boolean calctrack = false;
+        private double[] trackpartdistanceOC = new double[2];
+        private double[] trackpartdistanceO = {111.5677, 111.5677};
+        private Vector[][] controlPointsOTrack
+                = {
+                    {
+                        new Vector(-40, 0, 0), new Vector(40, 0, 0), new Vector(-40, 40, 0), new Vector(40, 40, 0)
+                    },
+                    {
+                        new Vector(40, 0, 0), new Vector(-40, 0, 0), new Vector(40, -40, 0), new Vector(-40, -40, 0)
+                    },
+                    {
+                        new Vector(-40, -3, 0), new Vector(-40, 3, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    }
+                };
+        private int[] BuildOTrack
+                = {
+                    2, 2, 0
+                };
         /**
          * Array with control points for the L-track.
          */
-        private double [] trackpartdistanceL = {60,83.6758,15,22.77,90,83.6758,105,74.6589};
-        private Vector[][] controlPointsLTrack =
-        {
-            {
-                new Vector(0, -75, 0), new Vector(90, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(90, -75, 0), new Vector(90, -15, 0), new Vector(120, -75, 0), new Vector(120, -15, 0)
-            },
-            {
-                new Vector(90, -15, 0), new Vector(75, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(75, -15, 0), new Vector(30, 20, 0), new Vector(35, -15, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(30, 20, 0), new Vector(30, 90, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(30, 90, 0), new Vector(-30, 90, 0), new Vector(30, 120, 0), new Vector(-30, 120, 0)
-            },
-            {
-                new Vector(-30, 90, 0), new Vector(-30, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(-30, -15, 0), new Vector(0, -75, 0), new Vector(-30, -75, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(-2, -75, 0), new Vector(2, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-        };
-        private int[] BuildLTrack =
-        {
-            0, 2, 0, 1, 0, 2, 0, 1, 0
-        };
+        private double[] trackpartdistanceLC = new double[8];
+        private double[] trackpartdistanceL = {90, 83.6758, 15, 63.46, 70, 83.6758, 105, 74.6589};
+        private Vector[][] controlPointsLTrack
+                = {
+                    {
+                        new Vector(0, -75, 0), new Vector(90, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(90, -75, 0), new Vector(90, -15, 0), new Vector(120, -75, 0), new Vector(120, -15, 0)
+                    },
+                    {
+                        new Vector(90, -15, 0), new Vector(75, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(75, -15, 0), new Vector(30, 20, 0), new Vector(35, -15, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(30, 20, 0), new Vector(30, 90, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(30, 90, 0), new Vector(-30, 90, 0), new Vector(30, 120, 0), new Vector(-30, 120, 0)
+                    },
+                    {
+                        new Vector(-30, 90, 0), new Vector(-30, -15, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(-30, -15, 0), new Vector(0, -75, 0), new Vector(-30, -75, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(-2, -75, 0), new Vector(2, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },};
+        private int[] BuildLTrack
+                = {
+                    0, 2, 0, 1, 0, 2, 0, 1, 0
+                };
         /**
          * Array with control points for the C-track.
          */
-        private double [] trackpartdistanceC = {41.838,226.14,41.838,125.51};
-        private Vector[][] controlPointsCTrack =
-        {
-            {
-                new Vector(30, 45, 0), new Vector(30, 75, 0), new Vector(45, 45, 0), new Vector(45, 75, 0)
-            },
-            {
-                new Vector(30, 75, 0), new Vector(30, -75, 0), new Vector(-60, 75, 0), new Vector(-60, -75, 0)
-            },
-            {
-                new Vector(30, -75, 0), new Vector(30, -45, 0), new Vector(45, -75, 0), new Vector(45, -45, 0)
-            },
-            {
-                new Vector(30, -45, 0), new Vector(30, 45, 0), new Vector(-15, -45, 0), new Vector(-15, 45, 0)
-            },
-            {
-                new Vector(28, 45, 0), new Vector(32, 45, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            }
-        };
-        private int[] BuildCTrack =
-        {
-            2, 2, 2, 2, 0
-        };
+        private double[] trackpartdistanceCC = new double[4];
+        private double[] trackpartdistanceC = {41.838, 226.14, 41.838, 125.51};
+        private Vector[][] controlPointsCTrack
+                = {
+                    {
+                        new Vector(30, 45, 0), new Vector(30, 75, 0), new Vector(45, 45, 0), new Vector(45, 75, 0)
+                    },
+                    {
+                        new Vector(30, 75, 0), new Vector(30, -75, 0), new Vector(-60, 75, 0), new Vector(-60, -75, 0)
+                    },
+                    {
+                        new Vector(30, -75, 0), new Vector(30, -45, 0), new Vector(45, -75, 0), new Vector(45, -45, 0)
+                    },
+                    {
+                        new Vector(30, -45, 0), new Vector(30, 45, 0), new Vector(-15, -45, 0), new Vector(-15, 45, 0)
+                    },
+                    {
+                        new Vector(28, 45, 0), new Vector(32, 45, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    }
+                };
+        private int[] BuildCTrack
+                = {
+                    2, 2, 2, 2, 0
+                };
         /**
          * Array with control points for the custom track.
          */
-        private double [] trackpartdistanceCustom = new double[3];
-        private Vector[][] controlPointsCustomTrack =
-        {
-            {
-                new Vector(1, 0, 0), new Vector(10, 0, 5), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(10, 0, 5), new Vector(20, 0, 5), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            },
-            {
-                new Vector(20, 0, 5), new Vector(30, 0, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
-            }
-        };
-        private int[] BuildCustomTrack =
-        {
-            0, 0, 0
-        };
+        private double[] trackpartdistanceCustomC = new double[3];
+        private double[] trackpartdistanceCustom = new double[3];
+        private Vector[][] controlPointsCustomTrack
+                = {
+                    {
+                        new Vector(1, 0, 0), new Vector(10, 0, 5), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(10, 0, 5), new Vector(20, 0, 5), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    },
+                    {
+                        new Vector(20, 0, 5), new Vector(30, 0, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
+                    }
+                };
+        private int[] BuildCustomTrack
+                = {
+                    0, 0, 0
+                };
 
         /**
          * Constructs the race track, sets up display lists.
          */
-        public Vector[] findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment)
-        {
+        public Vector[] findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment) {
             Vector l1, l2;
-            if (Buildtype[j] == 0)
-            {
+            if (Buildtype[j] == 0) {
                 l1 = straight(Points[j][0], Points[j][1], step);
                 l2 = straight(Points[j][0], Points[j][1], step + segment);
 
-            } else if (Buildtype[j] == 1)
-            {
+            } else if (Buildtype[j] == 1) {
                 l1 = bent_90(Points[j][0], Points[j][1], Points[j][2], step);
                 l2 = bent_90(Points[j][0], Points[j][1], Points[j][2], step + segment);
-            } else if (Buildtype[j] == 2)
-            {
+            } else if (Buildtype[j] == 2) {
                 l1 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3], step);
                 l2 = bent_180(Points[j][0], Points[j][1], Points[j][2], Points[j][3], step + segment);
-            } else
-            {
+            } else {
                 l1 = Vector.O;
                 l2 = Vector.O;
                 System.out.println("Invallid Buildtype! made l1 == l2 == {0,0,0}" + " " + Buildtype[j]);
 
             }
-            Vector[] back =
-            {
-                l1, l2
-            };
+            Vector[] back
+                    = {
+                        l1, l2
+                    };
             return back;
         }
 
-        public void trackprint(int i, Vector p, Vector q)
-        {
+        public void trackprint(int i, Vector p, Vector q) {
             int textureX = 0;
             int textureY = 0;
-            if (i % 2 != 0)
-            {
+            if (i % 2 != 0) {
                 textureX = 1;
                 textureY = 0;
             }
             gl.glTexCoord2d(textureX, textureY);
             gl.glVertex3d(p.x(), p.y(), p.z());
-            if (i % 2 == 0)
-            {
+            if (i % 2 == 0) {
                 textureX = 0;
                 textureY = 1;
-            } else
-            {
+            } else {
                 textureX = 1;
                 textureY = 1;
             }
@@ -1562,100 +1472,76 @@ public class RobotRace extends Base
             gl.glVertex3d(q.x(), q.y(), q.z());
         }
 
-        public Vector straight(Vector A, Vector B, Double t)
-        {
+        public Vector straight(Vector A, Vector B, Double t) {
             Vector point = A.scale(1 - t).add(B.scale(t));
             return point;
         }
 
-        public Vector bent_90(Vector A, Vector B, Vector C, double t)
-        {
+        public Vector bent_90(Vector A, Vector B, Vector C, double t) {
             Vector point = A.scale(Math.pow((1 - t), 2)).add(C.scale(2 * (1 - t) * t)).add(B.scale(Math.pow(t, 2)));
             return point;
         }
 
-        public Vector bent_180(Vector A, Vector B, Vector C, Vector D, double t)
-        {
+        public Vector bent_180(Vector A, Vector B, Vector C, Vector D, double t) {
 
             Vector point = A.scale(Math.pow(1 - t, 3)).add(C.scale(3 * Math.pow((1 - t), 2) * t)).add(D.scale(3 * (1 - t) * Math.pow(t, 2))).add(B.scale(Math.pow(t, 3)));
             return point;
         }
 
-        public void tracklengthcalculator(int tracknr, double ll, int j)
-        {
-            /*switch (tracknr)
-            {
-                case 1:
-                {
-                    if (j < trackpartdistanceO.length)
-                    {
-                        if (j <trackpartdistanceO.length)
-                        {
-                            trackpartdistanceO[j] +=ll; 
-                            totaltrackdistanceO +=ll;
+        public void tracklengthcalculator(int tracknr, double ll, int j) {
+            switch (tracknr) {
+                case 1: {
+                    if (j < trackpartdistanceOC.length) {
+                        if (j < trackpartdistanceOC.length) {
+                            trackpartdistanceOC[j] += ll;
                             break;
                         }
                     }
                 }
-                case 2:
-                {
-                    if (j < trackpartdistanceL.length)
-                    {
-                        if (j <trackpartdistanceL.length)
-                        {
-                            trackpartdistanceL[j] +=ll; 
-                            totaltrackdistanceL +=ll;
+                case 2: {
+                    if (j < trackpartdistanceLC.length) {
+                        if (j < trackpartdistanceLC.length) {
+                            trackpartdistanceLC[j] += ll;
                             break;
                         }
                     }
                 }
-                case 3:
-                {
-                    if (j < trackpartdistanceC.length)
-                    {
-                        if (j <trackpartdistanceC.length)
-                        {
-                            trackpartdistanceC[j] +=ll; 
-                            totaltrackdistanceC +=ll;
+                case 3: {
+                    if (j < trackpartdistanceCC.length) {
+                        if (j < trackpartdistanceCC.length) {
+                            trackpartdistanceCC[j] += ll;
                             break;
                         }
                     }
                 }
-                case 4:
-                {
-                    if (j < trackpartdistanceCustom.length)
-                    {
-                        if (j <trackpartdistanceCustom.length)
-                        {
-                            trackpartdistanceCustom[j] +=ll; 
-                            totaltrackdistanceCustom +=ll;
+                case 4: {
+                    if (j < trackpartdistanceCustomC.length) {
+                        if (j < trackpartdistanceCustomC.length) {
+                            trackpartdistanceCustomC[j] += ll;
                             break;
                         }
                     }
                 }
-            }*/
+            }
         }
-        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos, int tracknr, boolean calc)
-        {
+
+        public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos, int tracknr, boolean calc) {
             // draw part of top side of the track
             track.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             int times = Buildtype.length;
-            for (int j = 0; j < times; j++)
-            {
+            for (int j = 0; j < times; j++) {
                 double steps = 100;
                 double segment = 1 / steps;
-                for (int i = 0; i < steps; i++)
-                {
+                for (int i = 0; i < steps; i++) {
                     double step = segment * i;
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
 
                     Vector ll = l2.subtract(l1);
-                    if (calc == false)
-                    {
-                        tracklengthcalculator(tracknr,ll.length(),j);    
+                    if (calc == false) {
+                        tracklengthcalculator(tracknr, ll.length(), j);
                     }
                     Double s = ll.length();
                     Vector p = (new Vector(ll.y() / s * trackwidth * (4 - pos), -ll.x() / s * trackwidth * (4 - pos), 0)).add(l1);
@@ -1669,12 +1555,10 @@ public class RobotRace extends Base
             // Draw the inside of the track
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
-            for (int j = 0; j < times; j++)
-            {
+            for (int j = 0; j < times; j++) {
                 double stappen = 100;
                 double segment = 1 / stappen;
-                for (int i = 0; i < stappen; i++)
-                {
+                for (int i = 0; i < stappen; i++) {
                     double step = segment * i;
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
@@ -1682,7 +1566,7 @@ public class RobotRace extends Base
 
                     Vector ll = l2.subtract(l1);
                     Double s = ll.length();
-                    Vector p = (new Vector(-ll.y() / s * trackwidth , ll.x() / s * trackwidth , 0)).add(l1);
+                    Vector p = (new Vector(-ll.y() / s * trackwidth, ll.x() / s * trackwidth, 0)).add(l1);
                     Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
@@ -1692,12 +1576,10 @@ public class RobotRace extends Base
             // Draw the uitside of the track
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
-            for (int j = 0; j < times; j++)
-            {
+            for (int j = 0; j < times; j++) {
                 double stappen = 100;
                 double segment = 1 / stappen;
-                for (int i = 0; i < stappen; i++)
-                {
+                for (int i = 0; i < stappen; i++) {
                     double step = segment * i;
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
@@ -1706,7 +1588,7 @@ public class RobotRace extends Base
 
                     Double s = ll.length();
                     Vector p = (new Vector(ll.y() / s * trackwidth * 3, -ll.x() / s * trackwidth * 3, 0)).add(l1);
-                                
+
                     Vector q = p.add(new Vector(0, 0, -3));
                     trackprint(i, p, q);
                 }
@@ -1714,10 +1596,7 @@ public class RobotRace extends Base
             gl.glEnd();
         }
 
-
-
-        public Vector robotpos(Vector[][] Points, int Buildtype[], int j, double trackwidth, int pos, double time)
-        {
+        public Vector robotpos(Vector[][] Points, int Buildtype[], int j, double trackwidth, int pos, double time) {
             //time has to go from 0 to 1 do time =((clock-tstart)*velocity)/distancepart
             // distance part is trackpartdistance which is an array
             //int L = Buildtype.length;
@@ -1729,137 +1608,122 @@ public class RobotRace extends Base
             Vector LL = L2.subtract(L1);
 
             double s = LL.length();
-            Vector p = (new Vector(LL.y() / s * trackwidth * (2.5- pos ), -LL.x() / s * trackwidth * (2.5-  pos ), 0)).add(L1);
+            Vector p = (new Vector(LL.y() / s * trackwidth * (2.5 - pos), -LL.x() / s * trackwidth * (2.5 - pos), 0)).add(L1);
             return p;
         }
-
-
 
         /**
          * Draws this track, based on the selected track number.
          */
-        public void draw(int trackNr)
-        {
+        public void draw(int trackNr) {
             // The test track is selected
-            if (0 == trackNr)
-            {
+            if (0 == trackNr) {
                 //Set color
                 double trackwidth = 6;
 
-                float[][] colors =
-                {
-                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
-                };
+                float[][] colors
+                        = {
+                            Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                        };
 
-                for (int i = 0; i < 4; i++)
-                {
-                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+                for (int i = 0; i < 4; i++) {
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
                     drawTestTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
                 }
 
                 // The O-track is selected
-            } else if (1 == trackNr)
-            {
+            } else if (1 == trackNr) {
                 double trackwidth = 6;
-                float[][] colors =
-                {
-                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
-                };
-                for (int i = 0; i < 4; i++)
-                {
-                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1,1, calctrack);
+                float[][] colors
+                        = {
+                            Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                        };
+                for (int i = 0; i < 4; i++) {
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
+                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1, 1, calctrack);
                     calctrack = true;
                 }
 
                 // The L-track is selected
-            } else if (2 == trackNr)
-            {
+            } else if (2 == trackNr) {
                 double trackwidth = 6;
-                float[][] colors =
-                {
-                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
-                };
-                for (int i = 0; i < 4; i++)
-                {
-                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1,2,calctrack);
+                float[][] colors
+                        = {
+                            Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                        };
+                for (int i = 0; i < 4; i++) {
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
+                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1, 2, calctrack);
                     calctrack = true;
                 }
                 // C track is selected
-            } else if (3 == trackNr)
-            {
+            } else if (3 == trackNr) {
                 double trackwidth = 6;
-                float[][] colors =
-                {
-                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
-                };
-                for (int i = 0; i < 4; i++)
-                {
-                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1,3,calctrack);
+                float[][] colors
+                        = {
+                            Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                        };
+                for (int i = 0; i < 4; i++) {
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
+                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1, 3, calctrack);
                     calctrack = true;
                 }
 
                 // The custom track is selected
-            } else if (4 == trackNr)
-            {
+            } else if (4 == trackNr) {
                 double trackwidth = 6;
-                float[][] colors =
-                {
-                    Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
-                };
-                for (int i = 0; i < 4; i++)
-                {
-                    gl.glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1,4,calctrack);
+                float[][] colors
+                        = {
+                            Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
+                        };
+                for (int i = 0; i < 4; i++) {
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
+                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1, 4, calctrack);
                     calctrack = true;
                 }
             }
         }
 
-        private void drawTestTrack(double widthX, double widthY, double trackWidth, int segments)
-        {
+        private void drawTestTrack(double widthX, double widthY, double trackWidth, int segments) {
             track.bind(gl);
-            gl.glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             gl.glBegin(GL_QUADS);
             double segmentLength = (2 * Math.PI) / segments;
             double nextStartingX = 0;
 
             //Draw the top of the track
-            for (int i = 0; i < segments + 1; i++)
-            {
+            for (int i = 0; i < segments + 1; i++) {
                 double alpha = segmentLength * i;
-                double nextAlpha = segmentLength * (i+1);
+                double nextAlpha = segmentLength * (i + 1);
 
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
-                
+
                 double textureX = nextStartingX;
                 double textureY = 0;
-                
+
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(p.x(), p.y(), p.z());
-                
+
                 textureY = 1;
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(q.x(), q.y(), q.z());
-                
+
                 Vector p2 = new Vector((widthX - 3) * Math.cos(nextAlpha), (widthY - 3) * Math.sin(nextAlpha), 0);
                 Vector q2 = p2.add(new Vector(trackWidth * Math.cos(nextAlpha), trackWidth * Math.sin(nextAlpha), 0));
-                
+
                 Vector segmentVector = q2.subtract(q);
-                double xLength = segmentVector.length()/trackWidth;
-                
+                double xLength = segmentVector.length() / trackWidth;
+
                 textureX = xLength;
                 textureY = 1;
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(q2.x(), q2.y(), q2.z());
-                
+
                 textureY = 0;
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(p2.x(), p2.y(), p2.z());
-                
+
                 nextStartingX = xLength % 1;
             }
             gl.glEnd();
@@ -1867,8 +1731,7 @@ public class RobotRace extends Base
             //Draw the side of the track (inside)
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
-            for (int i = 0; i < segments + 1; i++)
-            {
+            for (int i = 0; i < segments + 1; i++) {
                 double alpha = segmentLength * i;
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 Vector q = p.add(new Vector(0, 0, -20));
@@ -1876,8 +1739,7 @@ public class RobotRace extends Base
                 int textureX = 0;
                 int textureY = 0;
 
-                if (i % 2 != 0)
-                {
+                if (i % 2 != 0) {
                     textureX = 1;
                     textureY = 0;
                 }
@@ -1885,12 +1747,10 @@ public class RobotRace extends Base
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(p.x(), p.y(), p.z());
 
-                if (i % 2 == 0)
-                {
+                if (i % 2 == 0) {
                     textureX = 0;
                     textureY = 1;
-                } else
-                {
+                } else {
                     textureX = 1;
                     textureY = 1;
                 }
@@ -1902,8 +1762,7 @@ public class RobotRace extends Base
 
             //Draw the side of the track (outside)
             gl.glBegin(GL_QUAD_STRIP);
-            for (int i = 0; i < segments + 1; i++)
-            {
+            for (int i = 0; i < segments + 1; i++) {
                 double alpha = segmentLength * i;
                 Vector p = new Vector((widthX - 3) * Math.cos(alpha), (widthY - 3) * Math.sin(alpha), 0);
                 p = p.add(new Vector(trackWidth * Math.cos(alpha), trackWidth * Math.sin(alpha), 0));
@@ -1912,8 +1771,7 @@ public class RobotRace extends Base
                 int textureX = 0;
                 int textureY = 0;
 
-                if (i % 2 != 0)
-                {
+                if (i % 2 != 0) {
                     textureX = 1;
                     textureY = 0;
                 }
@@ -1921,12 +1779,10 @@ public class RobotRace extends Base
                 gl.glTexCoord2d(textureX, textureY);
                 gl.glVertex3d(p.x(), p.y(), p.z());
 
-                if (i % 2 == 0)
-                {
+                if (i % 2 == 0) {
                     textureX = 0;
                     textureY = 1;
-                } else
-                {
+                } else {
                     textureX = 1;
                     textureY = 1;
                 }
@@ -1940,103 +1796,89 @@ public class RobotRace extends Base
         /**
          * Returns the position of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getPoint(int trackNr, double t, int pos, double trackwidth)
-                // t is time/speed
+        public Vector getPoint(int trackNr, double t, int pos, double trackwidth) // t is time/speed
         {
-            double shift = (int) pos*6;
+            double shift = (int) pos * 6;
             Robot r = robots[pos];
             Vector position;
-            switch (trackNr)
-            {
+            if (r.trackpartcount == 1) {
+                System.out.println(trackpartdistanceLC[0] + " " + trackpartdistanceLC[1] + " " + trackpartdistanceLC[2] + " " + trackpartdistanceLC[3] + " " + trackpartdistanceLC[4] + " " + trackpartdistanceLC[5] + " " + trackpartdistanceLC[6] + " " + trackpartdistanceLC[7]);
+            }
+            switch (trackNr) {
                 case 0:
-                    position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t/r.speed), (shift + 70) * Math.sin(2 * Math.PI * t/r.speed), 1d);
+                    position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t / r.speed), (shift + 70) * Math.sin(2 * Math.PI * t / r.speed), 1d);
                     //System.out.println(t);
                     return position; // <- code goes here
                 case 1: // O track
-                    if (r.trackpartcount >1) // Prevents errors if switched from a larger track to a smaller one
+                    if (r.trackpartcount > 1) // Prevents errors if switched from a larger track to a smaller one
                     {
                         r.trackpartcount = 0;
                     }
-                    tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceO[r.trackpartcount];
-                    
+                    tracktime = (t * r.speed - r.distanceTraversed) / trackpartdistanceO[r.trackpartcount];
 
-                    if (tracktime > 1)
-                    {
+                    if (tracktime > 1) {
                         tracktime = 0;
                         r.distanceTraversed += trackpartdistanceO[r.trackpartcount];
-                        r.trackpartcount+=1;
-                        if (r.trackpartcount > 1)
-                        {
+                        r.trackpartcount += 1;
+                        if (r.trackpartcount > 1) {
                             r.trackpartcount = 0;
                         }
-                        
+
                     }
-                    
-                    
-                    position =robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth,pos , tracktime);
-                    if (pos ==1)
-                    {
-                       // System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
+
+                    position = robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth, pos, tracktime);
+                    if (pos == 1) {
+                        // System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
-                    
+
                     return position;
                 case 2: // L track
                 {
-                    if (r.trackpartcount >7) // Prevents errors if switched from a larger track to a smaller one
+                    if (r.trackpartcount > 7) // Prevents errors if switched from a larger track to a smaller one
                     {
                         r.trackpartcount = 0;
                     }
-                    
-                    tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceL[r.trackpartcount];
-                    
 
-                    if (tracktime > 1)
-                    {
+                    tracktime = (t * r.speed - r.distanceTraversed) / trackpartdistanceL[r.trackpartcount];
+
+                    if (tracktime > 1) {
                         tracktime = 0;
                         r.distanceTraversed += trackpartdistanceL[r.trackpartcount];
-                        r.trackpartcount+=1;
-                        if (r.trackpartcount > 7)
-                        {
+                        r.trackpartcount += 1;
+                        if (r.trackpartcount > 7) {
                             r.trackpartcount = 0;
                         }
-                        
+
                     }
-                    
-                    
-                    position =robotpos(controlPointsLTrack, BuildLTrack, r.trackpartcount, trackwidth,pos , tracktime);
-                    if (pos ==1)
-                    {
+
+                    position = robotpos(controlPointsLTrack, BuildLTrack, r.trackpartcount, trackwidth, pos, tracktime);
+                    if (pos == 1) {
                         //System.out.println("trackpart: " + r.trackpartcount + " position: " + position);
                     }
-                    
+
                     return position;
                 }
                 case 3: // C track
                 {
-                    if (r.trackpartcount >3) // Prevents errors if switched from a larger track to a smaller one
+                    if (r.trackpartcount > 3) // Prevents errors if switched from a larger track to a smaller one
                     {
                         r.trackpartcount = 0;
                     }
-                    tracktime = (t*r.speed-r.distanceTraversed)/trackpartdistanceC[r.trackpartcount];
-                    
-                    
-                    if (tracktime > 1)
-                    {
+                    tracktime = (t * r.speed - r.distanceTraversed) / trackpartdistanceC[r.trackpartcount];
+
+                    if (tracktime > 1) {
                         tracktime = 0;
                         r.distanceTraversed += trackpartdistanceC[r.trackpartcount];
-                        r.trackpartcount+=1;
-                        if (r.trackpartcount > 3)
-                        {
+                        r.trackpartcount += 1;
+                        if (r.trackpartcount > 3) {
                             r.trackpartcount = 0;
                         }
-                        
+
                     }
-                    
-                    
-                    position =robotpos(controlPointsCTrack, BuildCTrack, r.trackpartcount, trackwidth,pos , tracktime);
-                    if (pos ==1)
-                    {
-                       // System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
+
+                    position = robotpos(controlPointsCTrack, BuildCTrack, r.trackpartcount, trackwidth, pos, tracktime);
+                    if (pos == 1) {
+                        // System.out.println("trackpart: " + r.trackpartcount + " tracktime: " + tracktime);
                     }
                     return position;
                 }
@@ -2050,12 +1892,11 @@ public class RobotRace extends Base
         /**
          * Returns the tangent of the curve at 0 <= {@code t} <= 1.
          */
-        public Vector getTangent(int trackNr, double t, int laneNr)
-        {
+        public Vector getTangent(int trackNr, double t, int laneNr) {
             Vector point1 = getPoint(trackNr, t, laneNr, 0d);
             Vector point2 = getPoint(trackNr, t + 0.1, laneNr, 0d);
             return point2.subtract(point1);
-            
+
         }
 
     }
@@ -2063,30 +1904,27 @@ public class RobotRace extends Base
     /**
      * Implementation of the terrain.
      */
-    private class Terrain
-    {
+    private class Terrain {
 
         /**
          * Can be used to set up a display list.
          */
-        public Terrain()
-        {
+        public Terrain() {
             // code goes here ...
         }
 
         /**
          * Draws the terrain.
          */
-        public void draw()
-        {
+        public void draw() {
             //The number of segments of the terrain
             int segmentsX = 40;
             int segmentsY = 40;
-            
+
             //dimensions of the terrain
             float widthX = 400f;
             float widthY = 400f;
-            
+
             //dimensions of a segment
             float dx = widthX / segmentsX;
             float dy = widthY / segmentsY;
@@ -2097,7 +1935,7 @@ public class RobotRace extends Base
 
             //Height multiplier of the terrain
             float amplitude = 20;
-            
+
             //Distance the complete terrain (except the water) is shifted down
             float shift = 0; //Not used right now
 
@@ -2108,39 +1946,37 @@ public class RobotRace extends Base
 
             //The colors to use in the height map
             /*Buffer lineTexArray = ByteBuffer.wrap(new byte[]
-            {
-                0, 0, (byte) 255,
-                (byte) 255, (byte) 241, (byte) 121,
-                (byte) 63, (byte) 205, 0,
-                (byte) 145, (byte) 75, 0
+             {
+             0, 0, (byte) 255,
+             (byte) 255, (byte) 241, (byte) 121,
+             (byte) 63, (byte) 205, 0,
+             (byte) 145, (byte) 75, 0
 
-            });
-            gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            gl.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, lineTexArray);*/
+             });
+             gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+             gl.glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, lineTexArray);*/
             gl.glDisable(GL_TEXTURE_2D);
             gl.glEnable(GL_TEXTURE_1D);
             terrainTexture.bind(gl);
             gl.glBegin(GL_QUADS);
-            for (int i = 0; i < segmentsX - 1; i++)
-            {
+            for (int i = 0; i < segmentsX - 1; i++) {
                 float x = i * dx;
-                for (int j = 0; j < segmentsY - 1; j++)
-                {
+                for (int j = 0; j < segmentsY - 1; j++) {
                     float y = j * dy;
                     float height = heightAt(x / periodX, y / periodY);
-                    gl.glTexCoord1d((height/2)+0.5);
+                    gl.glTexCoord1d((height / 2) + 0.5);
                     gl.glVertex3d(x, y, height * amplitude - shift);
 
                     height = heightAt((x + dx) / periodX, y / periodY);
-                    gl.glTexCoord1d((height/2)+0.5);
+                    gl.glTexCoord1d((height / 2) + 0.5);
                     gl.glVertex3d(x + dx, y, height * amplitude - shift);
 
                     height = heightAt((x + dx) / periodX, (y + dx) / periodY);
-                    gl.glTexCoord1d((height/2)+0.5);
+                    gl.glTexCoord1d((height / 2) + 0.5);
                     gl.glVertex3d(x + dx, y + dx, height * amplitude - shift);
 
                     height = heightAt(x / periodX, (y + dx) / periodY);
-                    gl.glTexCoord1d((height/2)+0.5);
+                    gl.glTexCoord1d((height / 2) + 0.5);
                     gl.glVertex3d(x, y + dx, height * amplitude - shift);
                 }
             }
@@ -2148,22 +1984,21 @@ public class RobotRace extends Base
             gl.glDisable(GL_TEXTURE_1D);
             gl.glEnable(GL_TEXTURE_2D);
             gl.glColor4d(155, 155, 155, 0.4);
-            
+
             gl.glBegin(GL_QUADS);
             gl.glVertex3d(0, 0, 0);
             gl.glVertex3d(widthX, 0, 0);
             gl.glVertex3d(widthX, widthY, 0);
             gl.glVertex3d(0, widthY, 0);
             gl.glEnd();
-            
+
             gl.glPopMatrix();
         }
 
         /**
          * Computes the elevation of the terrain at ({@code x}, {@code y}).
          */
-        public float heightAt(float x, float y)
-        {
+        public float heightAt(float x, float y) {
             //Terrain as a function of two cosine waves
             return (float) (0.6 * Math.cos(0.3 * x + 0.3 * y) + 0.4 * Math.cos(x - 0.5 * y));
         }
@@ -2174,8 +2009,7 @@ public class RobotRace extends Base
      * Main program execution body, delegates to an instance of the RobotRace
      * implementation.
      */
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         RobotRace robotRace = new RobotRace();
         robotRace.run();
     }
