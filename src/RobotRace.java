@@ -218,12 +218,9 @@ public class RobotRace extends Base {
     @Override
     public void drawScene() {
         double trackwidth = 6;
-        double lap = gs.tAnim;
+        double time = gs.tAnim; 
 
-//        
-//        double x = gs.cnt.x() / 10;
-//        double y = gs.cnt.y() / 10;
-//        double z = gs.cnt.z() / 10;
+
         // Background color.
         gl.glClearColor(1f, 1f, 1f, 0f);
 
@@ -247,37 +244,26 @@ public class RobotRace extends Base {
         for (int i = 0; i < robots.length; i++) {
             Robot r = robots[i];
 
-            r.walkAnim(gs.tAnim);
+            r.walkAnim(time);
 
-            double distance = (lap / r.speed);
-
-            r.move(raceTrack.getPoint(gs.trackNr, (float) lap, i, trackwidth));
+            r.move(raceTrack.getPoint(gs.trackNr, (float) time, i, trackwidth));
 
             r.drawStickFigure = gs.showStick;
             r.draw();
 
-            Vector tangent = raceTrack.getTangent(gs.trackNr, lap, i);
+            Vector tangent = raceTrack.getTangent(gs.trackNr, time, i);
             double anglePhi = Math.atan2(tangent.y(), tangent.x());
-            double anglethetax = 0;//-360/(2*Math.PI)*Math.atan2(tangent.y(), tangent.z());
-            double anglethetay =0.5*Math.PI-Math.asin(new Vector(tangent.x(), tangent.y(), 0).length()/tangent.length());;
-            if (tangent.z() < 0.0001 && tangent.z()>-0.0001) {
-                anglethetay = 0;
-            } else {if (tangent.z() >0 )
+            double angletheta =0.5*Math.PI-Math.asin(new Vector(tangent.x(), tangent.y(), 0).length()/tangent.length()); //assume going downhill 
+            if (tangent.z() < 0.0001 && tangent.z()>-0.0001) { //if z is negletively small assume z == 0 to prevent weird twitches and funny rotations
+                angletheta = 0;
+            } else {if (tangent.z() >0 ) //incase the robot is moving downhill rotate in the other direction
             {
-                anglethetay = -anglethetay;
+                angletheta = -angletheta;
             }
             }
-//            Vector alongTrack = raceTrack.getTangent(gs.trackNr, gs.tAnim / r.speed % 1, i);
-//            Vector parallel = alongTrack.normalized().scale(25).add(r.position);
-//
-//            gl.glBegin(GL_LINES);
-//            gl.glVertex3f((float) r.position.x(), (float) r.position.y(), (float) r.position.z());
-//            gl.glVertex3f((float) parallel.x(), (float) parallel.y(), (float) parallel.z());
-//            gl.glEnd();
-//            gl.glFlush();
-            //Math.toDegrees(anglePhi);
-            double[] rotationXYZ = new double[]{
-                anglethetax, anglethetay, anglePhi
+
+            double[] rotationXYZ = new double[]{ //adjust rotation of individual robot
+                0, angletheta, anglePhi // robots only rotate forwards, backwards or sideways so no x-direction tilts are needed
             };
 
             r.rotate(rotationXYZ);
@@ -1334,11 +1320,11 @@ public class RobotRace extends Base {
         /**
          * Array with control points for the O-track.
          */
-        private double tracktime = 0;
-        private boolean calctrack = false;
-        private double[] trackpartdistanceOC = new double[2];
-        private double[] trackpartdistanceO = {111.5677, 111.5677};
-        private Vector[][] controlPointsOTrack
+        private double tracktime = 0; 
+        private boolean calctrack = false; //this variable was used to make sure the addition within the trackpart calculation was only done ones
+        private double[] trackpartdistanceOC = new double[2]; //originally created to make the tracklength calculation. Not deleted incase of a new need for trackcalculation
+        private double[] trackpartdistanceO = {111.5677, 111.5677}; // calculated tracklength which is now inserted as a predifined vector. why make the program calculate it every time? 
+        private Vector[][] controlPointsOTrack// every row is a new trackpart in which: startpoint, endpoint, 1st-controlpoint and 2nd controlpoint are given respectively
                 = {
                     {
                         new Vector(-40, 0, 0), new Vector(40, 0, 0), new Vector(-40, 40, 0), new Vector(40, 40, 0)
@@ -1352,14 +1338,14 @@ public class RobotRace extends Base {
                 };
         private int[] BuildOTrack
                 = {
-                    2, 2, 0
+                    2, 2, 0// are the commands used by findpoint. 0 is a line, 1 is a kwadratic Bézier curve and 2 is a cubic Bézier curve
                 };
         /**
          * Array with control points for the L-track.
          */
-        private double[] trackpartdistanceLC = new double[8];
-        private double[] trackpartdistanceL = {90, 83.6758, 15, 63.46, 70, 83.6758, 105, 74.6589};
-        private Vector[][] controlPointsLTrack
+        private double[] trackpartdistanceLC = new double[8];//originally created to make the tracklength calculation. Not deleted incase of a new need for trackcalculation
+        private double[] trackpartdistanceL = {90, 83.6758, 15, 63.46, 70, 83.6758, 105, 74.6589};// calculated tracklength which is now inserted as a predifined vector. why make the program calculate it every time? 
+        private Vector[][] controlPointsLTrack// every row is a new trackpart in which: startpoint, endpoint, 1st-controlpoint and 2nd controlpoint are given respectively
                 = {
                     {
                         new Vector(0, -75, 0), new Vector(90, -75, 0), new Vector(0, 0, 0), new Vector(0, 0, 0)
@@ -1390,14 +1376,14 @@ public class RobotRace extends Base {
                     },};
         private int[] BuildLTrack
                 = {
-                    0, 2, 0, 1, 0, 2, 0, 1, 0
+                    0, 2, 0, 1, 0, 2, 0, 1, 0// are the commands used by findpoint. 0 is a line, 1 is a kwadratic Bézier curve and 2 is a cubic Bézier curve
                 };
         /**
          * Array with control points for the C-track.
          */
-        private double[] trackpartdistanceCC = new double[4];
-        private double[] trackpartdistanceC = {41.838, 226.14, 41.838, 125.51};
-        private Vector[][] controlPointsCTrack
+        private double[] trackpartdistanceCC = new double[4];//originally created to make the tracklength calculation. Not deleted incase of a new need for trackcalculation
+        private double[] trackpartdistanceC = {41.838, 226.14, 41.838, 125.51};// calculated tracklength which is now inserted as a predifined vector. why make the program calculate it every time? 
+        private Vector[][] controlPointsCTrack // every row is a new trackpart in which: startpoint, endpoint, 1st-controlpoint and 2nd controlpoint are given respectively
                 = {
                     {
                         new Vector(30, 45, 0), new Vector(30, 75, 0), new Vector(45, 45, 0), new Vector(45, 75, 0)
@@ -1417,14 +1403,14 @@ public class RobotRace extends Base {
                 };
         private int[] BuildCTrack
                 = {
-                    2, 2, 2, 2, 0
+                    2, 2, 2, 2, 0// are the commands used by findpoint. 0 is a line, 1 is a kwadratic Bézier curve and 2 is a cubic Bézier curve
                 };
         /**
          * Array with control points for the custom track.
          */
-        private double[] trackpartdistanceCustomC = new double[3];
-        private double[] trackpartdistanceCustom = {132.37,132.37,132.37,132.37};
-        private Vector[][] controlPointsCustomTrack
+        private double[] trackpartdistanceCustomC = new double[3];//originally created to make the tracklength calculation. Not deleted incase of a new need for trackcalculation
+        private double[] trackpartdistanceCustom = {132.37,132.37,132.37,132.37};// calculated tracklength which is now inserted as a predifined vector. why make the program calculate it every time? 
+        private Vector[][] controlPointsCustomTrack// every row is a new trackpart in which: startpoint, endpoint, 1st-controlpoint and 2nd controlpoint are given respectively
                 = {
                     {
                         new Vector(0, 0, 0), new Vector(-90, 0, 30), new Vector(0, -47.5, 0), new Vector(-90, -47.5, 30)
@@ -1445,13 +1431,13 @@ public class RobotRace extends Base {
                 };
         private int[] BuildCustomTrack
                 = {
-                    2, 2, 2,2,0
+                    2, 2, 2,2,0 // are the commands used by findpoint. 0 is a line, 1 is a kwadratic Bézier curve and 2 is a cubic Bézier curve
                 };
 
         /**
          * Constructs the race track, sets up display lists.
          */
-        public Vector[] findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment) {
+        public Vector[] findpoint(int Buildtype[], Vector Points[][], int j, double step, double segment) { // this function is used to get the right trackpart point
             Vector l1, l2;
             if (Buildtype[j] == 0) {
                 l1 = straight(Points[j][0], Points[j][1], step);
@@ -1495,25 +1481,25 @@ public class RobotRace extends Base {
             gl.glTexCoord2d(textureX, textureY);
             gl.glVertex3d(q.x(), q.y(), q.z());
         }
-
-        public Vector straight(Vector A, Vector B, Double t) {
+// the following functions are used to create trackparts there are 3 different kinds:
+        public Vector straight(Vector A, Vector B, Double t) { // actually a simple Bézier line, nothing special
             Vector point = A.scale(1 - t).add(B.scale(t));
             return point;
         }
 
-        public Vector bent_90(Vector A, Vector B, Vector C, double t) {
+        public Vector bent_90(Vector A, Vector B, Vector C, double t) { // Actually a kwadratic Bézier curve which will mostly used to make 90 degree turns
             Vector point = A.scale(Math.pow((1 - t), 2)).add(C.scale(2 * (1 - t) * t)).add(B.scale(Math.pow(t, 2)));
             return point;
         }
 
-        public Vector bent_180(Vector A, Vector B, Vector C, Vector D, double t) {
+        public Vector bent_180(Vector A, Vector B, Vector C, Vector D, double t) { // Actually a cubic Bézier curve which will mostly be used to make 180 degree turns
 
             Vector point = A.scale(Math.pow(1 - t, 3)).add(C.scale(3 * Math.pow((1 - t), 2) * t)).add(D.scale(3 * (1 - t) * Math.pow(t, 2))).add(B.scale(Math.pow(t, 3)));
             return point;
         }
 
-        public void tracklengthcalculator(int tracknr, double ll, int j) {
-            switch (tracknr) {
+        public void tracklengthcalculator(int tracknr, double ll, int j) { // this calculator is used to find the lengths of individual trackparts which where filled in later by hand as final vectors to prevent a timing error in which the track calculation is not yet done before the track is used
+            switch (tracknr) { 
                 case 1: {
                     if (j < trackpartdistanceOC.length) {
                         if (j < trackpartdistanceOC.length) {
@@ -1550,16 +1536,17 @@ public class RobotRace extends Base {
         }
 
         public void TrackConstructor(Vector[][] Points, int Buildtype[], Double trackwidth, int pos, int tracknr, boolean calc) {
-            // draw part of top side of the track
+            
+// draw part of top side of the track
             track.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             int times = Buildtype.length;
-            for (int j = 0; j < times; j++) {
+            for (int j = 0; j < times; j++) {//work through the trackparts individually at a time
                 double steps = 100;
                 double segment = 1 / steps;
-                for (int i = 0; i < steps; i++) {
+                for (int i = 0; i < steps; i++) { // create the trackpart with 100 segments
                     double step = segment * i;
-                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
+                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment); // Findpoint returns 2 vectors. of which one is a bit further ahead
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
 
@@ -1575,8 +1562,8 @@ public class RobotRace extends Base {
                 }
             }
             gl.glEnd();
-
-            // Draw the inside of the track
+            
+// Draw the inside of the track
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             for (int j = 0; j < times; j++) {
@@ -1584,11 +1571,10 @@ public class RobotRace extends Base {
                 double segment = 1 / stappen;
                 for (int i = 0; i < stappen; i++) {
                     double step = segment * i;
-                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
+                    Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment); // returns the next point on the curve and the point after that in a vector array
                     Vector l1 = beginandend[0];
-                    Vector l2 = beginandend[1];
-
-                    Vector ll = l2.subtract(l1);
+                    Vector l2 = beginandend[1]; 
+                    Vector ll = l2.subtract(l1); //B-A is the vector from A to B which will be used in calculating the tangent component
                     double s = Math.sqrt(Math.pow(ll.x(),2)+Math.pow(ll.y(), 2));
                     Vector p = (new Vector(-ll.y() / s * trackwidth, ll.x() / s * trackwidth, -ll.z())).add(l1);
                     Vector q = p.add(new Vector(0, 0, -3));
@@ -1596,8 +1582,8 @@ public class RobotRace extends Base {
                 }
             }
             gl.glEnd();
-
-            // Draw the uitside of the track
+            
+// Draw the uitside of the track
             brick.bind(gl);
             gl.glBegin(GL_QUAD_STRIP);
             for (int j = 0; j < times; j++) {
@@ -1608,12 +1594,11 @@ public class RobotRace extends Base {
                     Vector[] beginandend = findpoint(Buildtype, Points, j, step, segment);
                     Vector l1 = beginandend[0];
                     Vector l2 = beginandend[1];
-                    Vector ll = l2.subtract(l1);
+                    Vector ll = l2.subtract(l1); //B-A is the vector from A to B which will be used in calculating the tangent component
 
                     double s = Math.sqrt(Math.pow(ll.x(),2)+Math.pow(ll.y(), 2));
-                    Vector p = (new Vector(ll.y() / s * trackwidth * 3, -ll.x() / s * trackwidth * 3, -ll.z())).add(l1);
-
-                    Vector q = p.add(new Vector(0, 0, -3));
+                    Vector p = (new Vector(ll.y() / s * trackwidth * 3, -ll.x() / s * trackwidth * 3, -ll.z())).add(l1); // point 1 is calculated by adding the point l1 with a tangent component of with 3times the tracklength
+                    Vector q = p.add(new Vector(0, 0, -3)); //point 2 is just 3 meters below the surface
                     trackprint(i, p, q);
                 }
             }
@@ -1621,26 +1606,22 @@ public class RobotRace extends Base {
         }
 
         public Vector robotpos(Vector[][] Points, int Buildtype[], int j, double trackwidth, int pos, double time) {
-            //time has to go from 0 to 1 do time =((clock-tstart)*velocity)/distancepart
-            // distance part is trackpartdistance which is an array
-            //int L = Buildtype.length;
-            //double tpos = time/trackpartdistance[j];
 
-            Vector[] beginandend = findpoint(Buildtype, Points, j, time, 0.01);
+            Vector[] beginandend = findpoint(Buildtype, Points, j, time, 0.01); // Finds 2 positions 1st is the current position on the line and the second a position in a short future
             Vector L1 = beginandend[0];
             Vector L2 = beginandend[1];
-            Vector LL = L2.subtract(L1);
+            Vector LL = L2.subtract(L1); // L2-L1 gives the normal in that position
 
-            double s = Math.sqrt(Math.pow(LL.x(),2)+Math.pow(LL.y(), 2));
-            Vector p = (new Vector(LL.y() / s * trackwidth * (2.5 - pos), -LL.x() / s * trackwidth * (2.5 - pos), 0)).add(L1);
+            double s = Math.sqrt(Math.pow(LL.x(),2)+Math.pow(LL.y(), 2)); // the track is horizontal from each bezierpoint so the z component is not used
+            Vector p = (new Vector(LL.y() / s * trackwidth * (2.5 - pos), -LL.x() / s * trackwidth * (2.5 - pos), 0)).add(L1); // add the origional position with the appropriate width (in the tangent direction) to place the robot on track 
             return p;
         }
 
         /**
          * Draws this track, based on the selected track number.
          */
-        public void draw(int trackNr) {
-            // The test track is selected
+        public void draw(int trackNr) {            
+// The test track is selected
             if (0 == trackNr) {
                 //Set color
                 double trackwidth = 6;
@@ -1654,8 +1635,8 @@ public class RobotRace extends Base {
                     gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
                     drawTestTrack(45 + (i * trackwidth), 70 + (i * trackwidth), trackwidth, 50);
                 }
-
-                // The O-track is selected
+                
+// The O-track is selected
             } else if (1 == trackNr) {
                 double trackwidth = 6;
                 float[][] colors
@@ -1663,12 +1644,12 @@ public class RobotRace extends Base {
                             Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
                         };
                 for (int i = 0; i < 4; i++) {
-                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
-                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1, 1, calctrack);
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);// get the right collors with the right robottrack
+                    TrackConstructor(controlPointsOTrack, BuildOTrack, trackwidth, i + 1, 1, calctrack); // Builds every individual lane with its own color
                     calctrack = true;
                 }
-
-                // The L-track is selected
+                
+// The L-track is selected
             } else if (2 == trackNr) {
                 double trackwidth = 6;
                 float[][] colors
@@ -1676,24 +1657,23 @@ public class RobotRace extends Base {
                             Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
                         };
                 for (int i = 0; i < 4; i++) {
-                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
-                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1, 2, calctrack);
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);// get the right collors with the right robottrack
+                    TrackConstructor(controlPointsLTrack, BuildLTrack, trackwidth, i + 1, 2, calctrack); // Builds every individual lane with its own color
                     calctrack = true;
-                }
-                // C track is selected
+                }               
+// C track is selected
             } else if (3 == trackNr) {
                 double trackwidth = 6;
-                float[][] colors
+                float[][] colors 
                         = {
                             Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
                         };
                 for (int i = 0; i < 4; i++) {
-                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
-                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1, 3, calctrack);
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]); // get the right collors with the right robottrack
+                    TrackConstructor(controlPointsCTrack, BuildCTrack, trackwidth, i + 1, 3, calctrack); // Builds every individual lane with its own color
                     calctrack = true;
                 }
-
-                // The custom track is selected
+// The custom track is selected
             } else if (4 == trackNr) {
                 double trackwidth = 6;
                 float[][] colors
@@ -1701,8 +1681,8 @@ public class RobotRace extends Base {
                             Material.ORANGE.diffuse, Material.WOOD.diffuse, Material.SILVER.diffuse, Material.GOLD.diffuse
                         };
                 for (int i = 0; i < 4; i++) {
-                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);
-                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1, 4, calctrack);
+                    gl.glColor3f(colors[3 - i][0], colors[3 - i][1], colors[3 - i][2]);// get the right collors with the right robottrack
+                    TrackConstructor(controlPointsCustomTrack, BuildCustomTrack, trackwidth, i + 1, 4, calctrack); // Builds every individual lane with its own color
                     calctrack = true;
                 }
             }
@@ -1825,7 +1805,7 @@ public class RobotRace extends Base {
             double shift = (int) pos * 6;
             Robot r = robots[pos];
             Vector position;
-            switch (trackNr) {
+            switch (trackNr) { //sort by track
                 case 0:
                     position = new Vector((45 + shift) * Math.cos(2 * Math.PI * t / r.speed), (shift + 70) * Math.sin(2 * Math.PI * t / r.speed), 1d);
                     return position; // <- code goes here
@@ -1834,22 +1814,22 @@ public class RobotRace extends Base {
                     {
                         r.trackpartcount = 0;
                     }
-                    tracktime = (t * r.speed - r.distanceTraversed) / trackpartdistanceO[r.trackpartcount];
-
-                    if (tracktime > 1) {
+                    tracktime = (t * r.speed - r.distanceTraversed) / trackpartdistanceO[r.trackpartcount]; // tracktime goes from 0 to 1 on every track in every lap thanks to this formula
+                    
+                    if (tracktime > 1) { //reset tracktime when it goes out of its domain
                         tracktime = 0;
-                        r.distanceTraversed += trackpartdistanceO[r.trackpartcount];
-                        r.trackpartcount += 1;
-                        if (r.trackpartcount > 1) {
-                            r.trackpartcount = 0;
+                        r.distanceTraversed += trackpartdistanceO[r.trackpartcount]; //distance traveled is updated
+                        r.trackpartcount += 1; // next trackpart is choosen
+                        if (r.trackpartcount > 1) { // if the next trackpart is not surposed to be used (all tracks have a small connecting piece of road that is not surposed to be used )
+                            r.trackpartcount = 0; // the counter is reset
                         }
 
                     }
 
-                    position = robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth, pos, tracktime);
+                    position = robotpos(controlPointsOTrack, BuildOTrack, r.trackpartcount, trackwidth, pos, tracktime); // gives the position on the specific time,track, trackpart and robotposition
                     return position;
                 case 2: // L track
-                {
+                { // works pretty much the same as the O-track case just some names and numbers are changed
                     if (r.trackpartcount > 7) // Prevents errors if switched from a larger track to a smaller one
                     {
                         r.trackpartcount = 0;
@@ -1871,7 +1851,7 @@ public class RobotRace extends Base {
                     return position;
                 }
                 case 3: // C track
-                {
+                { // works pretty much the same as the O-track case just some names and numbers are changed
                     if (r.trackpartcount > 3) // Prevents errors if switched from a larger track to a smaller one
                     {
                         r.trackpartcount = 0;
@@ -1892,6 +1872,7 @@ public class RobotRace extends Base {
                     return position;
                 }
                 case 4: // Custom track
+                { // works pretty much the same as the O-track case just some names and numbers are changed
                     if (r.trackpartcount > 3) // Prevents errors if switched from a larger track to a smaller one
                     {
                         r.trackpartcount = 0;
@@ -1912,17 +1893,17 @@ public class RobotRace extends Base {
                     return position;
             }
 
-            return new Vector(0, 0, 0);
+            
+            } return Vector.O;
         }
 
         /**
          * Returns the tangent of the curve at 0 <= {@code t} <= 1.
          */
         public Vector getTangent(int trackNr, double t, int laneNr) {
-            Vector point1 = getPoint(trackNr, t, laneNr, 0d);
-            Vector point2 = getPoint(trackNr, t + 0.001, laneNr, 0d);
-            Vector tangent = point2.subtract(point1);
-            //tangent = new Vector(tangent.x(),tangent.y(),Math.abs(tangent.z()));
+            Vector point1 = getPoint(trackNr, t, laneNr, 0d); // takes current position
+            Vector point2 = getPoint(trackNr, t + 0.001, laneNr, 0d); // takes position in a very recent future
+            Vector tangent = point2.subtract(point1); // derive the tangent by simple subtraction
             return tangent;
 
         }
